@@ -1,0 +1,35 @@
+<div class="header-bar">
+  <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="name" (input)="changeName($event)"/></h1>
+  <nav class="navigation-menu">
+    <ul>
+      <li class="navigation-item">
+        <a routerLink="/home">Home</a>
+      </li>
+      <li class="navigation-item">
+        <a routerLink="/profile">Profile</a>
+      </li>
+      <li class="navigation-item">
+        <a routerLink="/products/{{id}}" routerLinkActive="active">Products</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<div class="content-container">
+  
+  <div class="ad-banner">
+    <app-ad-banner></app-ad-banner>
+  </div>
+
+  <div class="main-content">
+    <router-outlet></router-outlet>
+  </div>
+
+  <div class="ad-banner">
+    <app-ad-banner></app-ad-banner>
+  </div>
+</div>
+<div class="chat-widget-container">
+  <button (click)="toggleChatWidgetVisibility()">Chat {{unreadMessageCount}}</button>
+  <app-chat-widget #appChatWidget></app-chat-widget>
+</div>

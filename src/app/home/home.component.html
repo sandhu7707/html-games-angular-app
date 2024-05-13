@@ -1,0 +1,15 @@
+<div class="current-tags-container">
+    <ul class="tags-list">
+        <li *ngFor="let tag of tags">{{tag}}</li>
+    </ul>
+</div>
+<app-personal-section [name]="name" [id]="id" (tagEvent)="addTag($event)">
+    <ng-template appCommonContent>
+        <div class="section-footer">
+            End of Section
+        </div>
+    </ng-template>
+    <ng-container ngProjectAs="[category]">
+        <span class="category-label">Games</span>
+    </ng-container>
+</app-personal-section>

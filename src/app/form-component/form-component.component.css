@@ -1,0 +1,11 @@
+.container {
+    width: fit-content;
+    margin: auto
+    /* display: flex;
+    flex-wrap: wrap;
+    justify-content: center; */
+}
+/* h1{
+    text-align: center;
+    width: 100%;
+} */

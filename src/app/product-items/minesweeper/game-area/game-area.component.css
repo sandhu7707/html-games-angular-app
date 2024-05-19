@@ -1,0 +1,23 @@
+.minesweeper-tile{
+    height: 50px;
+    width: 50px;
+    background-color: aqua;
+    border: 2px solid darkblue;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.game-over-message{
+    width: 100%;
+    text-align: center;
+    height: 10%;
+    font-size: xxx-large;
+}
+
+.safe .minesweeper-tile{
+    background-color: aliceblue;
+}
+
+.mine .minesweeper-tile{
+    background-color: red;
+}

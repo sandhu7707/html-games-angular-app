@@ -1,0 +1,25 @@
+<div class="container">
+    <table class="user-info">
+        <thead><tr><td style="width: 25%;"></td><td style="width: 25%;"></td></tr></thead>
+        <tbody>
+            <tr>
+                <td><label>User Id:</label></td>
+                <td>{{userService.id}}</td>
+            </tr>
+            <tr>
+                <td><label>User name:</label></td>
+                <td>{{userService.username}}</td>
+            </tr>
+            <tr>
+                <td><label>User tag (Public):</label></td>
+                <td>{{userService.name}}</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button class="logout-button" (click)="logOut()">Log Out</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

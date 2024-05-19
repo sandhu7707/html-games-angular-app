@@ -1,15 +1,12 @@
 <div class="header-bar">
   <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="name" (input)="changeName($event)"/></h1>
   <nav class="navigation-menu">
-    <ul>
+    <ul *ngIf="userService.loggedIn">
       <li class="navigation-item">
-        <a routerLink="/home">Home</a>
+        <a class="status-{{navStatus[0]}}" routerLink="/home">Home</a>
       </li>
       <li class="navigation-item">
-        <a routerLink="/profile">Profile</a>
-      </li>
-      <li class="navigation-item">
-        <a routerLink="/products/{{id}}" routerLinkActive="active">Products</a>
+        <a class="status-{{navStatus[1]}}"routerLink="/profile">Profile</a>
       </li>
     </ul>
   </nav>
@@ -17,17 +14,20 @@
 
 <div class="content-container">
   
-  <div class="ad-banner">
-    <app-ad-banner></app-ad-banner>
+  <div class="ad-banner-left">
+    <!-- <app-ad-banner positionClass="container-left"></app-ad-banner> -->
   </div>
 
   <div class="main-content">
     <router-outlet></router-outlet>
   </div>
 
-  <div class="ad-banner">
-    <app-ad-banner></app-ad-banner>
+  <div class="ad-banner-right">
+    <!-- <app-ad-banner positionClass="container-right"></app-ad-banner> -->
   </div>
+  
+<a (click)="some($event)">Test message</a>
+
 </div>
 <div class="chat-widget-container">
   <button (click)="toggleChatWidgetVisibility()">Chat {{unreadMessageCount}}</button>

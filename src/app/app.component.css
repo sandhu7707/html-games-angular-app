@@ -1,17 +1,30 @@
 .header-bar{
+    padding-inline-start: 1rem;
+    box-sizing: border-box;
     display: flex;
     width: 100%;
+    background-color: #ec1010c4;
+    border: 4px ridge #ec1010c4;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
 }
 
 .app-heading, .app-heading-name-input{
     font-size: 1rem;
     flex-shrink: 1;
+    flex-wrap: nowrap;
+    color: whitesmoke;
 }
 
 .app-heading-name-input {
     border-top: 0;
     border-left: 0;
     border-right: 0;
+    border-radius: 1rem;
+    border-color: wheat;
+    margin-inline-start: 0.5rem;
+    padding-inline: 1rem;
+    background-color: #e94545;
 }
 
 .app-heading-name-input:focus{
@@ -34,19 +47,41 @@
 }
 
 .navigation-item{
-    margin: 0 0.5rem;
+    margin: 0;
+    height: 100%;
 }
 
 .navigation-item a {
+    margin-inline: 1px;
     text-decoration: none;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-inline: 1rem;
+    box-sizing: border-box;
+    border-color: #d9d4c9;
+    background-color: #d9d4c9;
+    border-radius: 0.5rem;
+}
+
+.navigation-item:last-child a {
+    border-top-right-radius: 1rem;
+}
+
+a.status-0 {
+    border-style: outset;
+}
+
+a.status-1 {
+    border-style: inset;
 }
 
 .navigation-item a:link{
-    color: blue;
+    color: black;
 }
 
 .navigation-item a:visited{
-    color: blueviolet;
+    color: black;
 }
 
 .navigation-item a:hover {
@@ -55,33 +90,30 @@
 
 .chat-widget-container {
     position: absolute;
-    bottom: 0px;
-    right: 0px;
-    width: max(20%, 150px);    
-    border: 1px solid black;
-    border-bottom: 0;
-    border-radius: 5px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
+    bottom: 4px;
+    right:  4px;
+    min-width: 5rem;
 }
 
 .chat-widget-container button {
     width: 100%;
-    height: 1.5rem;
+    height: 5rem;
     background-color: aliceblue;
-    border: 0;
-    border-radius: 5px;
+    border-top-left-radius: 5rem;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 1em;
 }
 
 .content-container {
+    flex-grow: 1;
+    background-color: #2bd600b2;
+    border: 4px ridge #2bd600b2;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
     display: grid;
     grid-template-columns: 1fr 7fr 1fr;
 }
 
-.ad-banner, .ad-banner {
-    margin:  1rem  0;
-}
-
 .main-content {
-    margin: 1rem;
+        height: 80vh;
 }

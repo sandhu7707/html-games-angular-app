@@ -1,0 +1,13 @@
+.container{
+    width: 100%;
+    height: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: x-large;
+}
+
+td {
+    padding-bottom: 2rem;
+}

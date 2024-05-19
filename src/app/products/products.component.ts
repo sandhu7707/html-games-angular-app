@@ -10,9 +10,6 @@ import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
 })
 export class ProductsComponent {
 
-  @Input() 
-  title: string = "";
-
-  @Input() id: number = 0;
+  @Input() id: string = "";
 
 }

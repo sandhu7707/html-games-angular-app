@@ -1,5 +1,5 @@
-import { Component, NgZone } from '@angular/core';
-import { IdServiceService } from '../services/id-service/id-service.service';
+import { AfterViewInit, Component, NgZone, ViewChild, Input } from '@angular/core';
+import { UserService } from '../services/id-service/user.service';
 import { AdsService } from '../services/ads-service/ads.service';
 
 @Component({
@@ -9,20 +9,28 @@ import { AdsService } from '../services/ads-service/ads.service';
   templateUrl: './ad-banner.component.html',
   styleUrl: './ad-banner.component.css'
 })
-export class AdBannerComponent {
+export class AdBannerComponent implements AfterViewInit{
 
   id!: string;
   ad: any;
+  @Input() positionClass!: string
 
-  constructor(private idService: IdServiceService, private adsService: AdsService, private ngZone: NgZone){
-    this.id = idService.id  
-    this.getAd();
+  @ViewChild("adContainer") adContainer!: any;
+
+  constructor(private idService: UserService, private adsService: AdsService, private ngZone: NgZone){
+    this.id = idService.id
   }
 
-  getAd(){
-    this.ad = this.adsService.getAd();
+  ngAfterViewInit(): void {
+    this.getAdAndAddToView();
+  }
+
+  getAdAndAddToView(){
+    this.adContainer.nativeElement.innerHTML = this.adsService.getAd().outerHTML;
     this.ngZone.runOutsideAngular(() => setInterval(() => {
-      this.ngZone.run(() => this.ad = this.adsService.getAd())
+      this.ngZone.run(() => {
+        this.adContainer.nativeElement.innerHTML = this.adsService.getAd().outerHTML;
+      })
     }, 3000))
   }
 }

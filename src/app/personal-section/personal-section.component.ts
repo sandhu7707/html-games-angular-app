@@ -18,7 +18,7 @@ export class PersonalSectionComponent implements OnChanges {
   @ContentChild(CommonContentDirective) commonContent!: CommonContentDirective;
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['name'].previousValue === undefined && changes['name'].currentValue === undefined){
+    if(changes['name'].currentValue === undefined || changes['name'].currentValue === ""){
       this.name = `Player ${this.id}`
     }
   }

@@ -1,2 +1,36 @@
+<div class="container">
 <p>minesweeper - {{id}}</p>
-
+<div class="game-area">
+    <div class="game-container">
+        <div *ngIf="gameState===0">
+            <form (ngSubmit)="startGame()" [formGroup]="gameConf">
+                <div>
+                    <label>Tile Blocks</label>
+                    <input type="number" name="tilesNum" formControlName="tilesNum">
+                </div>
+                <pre></pre>
+                <div>
+                    <label>Mines</label>
+                    <input type="number" name="minesNum" formControlName="minesNum">
+                </div>
+                <pre></pre>
+                <div class="validation-error" *ngIf="gameConf.errors?.['numberOfMinesGreaterThanNumberOfTiles']"> number of mines must be less than number of tiles</div>
+                <pre></pre>
+                <button type="sumbit" [disabled]="gameConf.errors?.['numberOfMinesGreaterThanNumberOfTiles']">Start</button>
+            </form>
+        </div>
+        <app-game-area class="gameplay-area" *ngIf="gameState===1" [tilesMap]="tileMap" [gameContainer]="gameContainer" (gameResult)="onGameResult($event)" #gameContainer></app-game-area>
+        <div *ngIf="gameState===2">
+            2
+        </div>
+        <div *ngIf="gameState===3">
+            3
+        </div>
+    </div>
+    <div class="emulator-controls" *ngIf="gameState===1 || gameState===2">
+        <button (click)="onPauseClick()">{{gameState===1 ? "Pause" : "Play"}}</button>
+        <button (click)="restartGame()">Restart</button>
+        <button (click)="this.gameState=0">Start Screen</button>
+    </div>
+</div>
+</div>

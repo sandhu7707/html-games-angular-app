@@ -1,38 +1,52 @@
-import { Component, ViewChild } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { FormComponentComponent } from './form-component/form-component.component';
 import { ProductsComponent } from './products/products.component';
 import { ChatWidgetComponent } from './chat-widget/chat-widget.component';
 import { Subscription } from 'rxjs';
 import { MessageServiceService } from './services/message-service/message-service.service';
-import { IdServiceService } from './services/id-service/id-service.service';
+import { UserService } from './services/id-service/user.service';
 import { AdBannerComponent } from './ad-banner/ad-banner.component';
+import { CommonModule, Location } from '@angular/common';
+import { ChatService } from './services/chat-service/chat.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, FormComponentComponent, RouterLink, RouterLinkActive, ProductsComponent, ChatWidgetComponent, AdBannerComponent],
+  imports: [RouterOutlet, FormsModule, FormComponentComponent, RouterLink, RouterLinkActive, ProductsComponent, ChatWidgetComponent, AdBannerComponent, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent{
   title = 'hello-world';
-  id: string;
   name = "";
+  navStatus: number[] = new Array(2).fill(0)
 
   @ViewChild("appChatWidget") chatWidget!: ChatWidgetComponent;
 
   unreadMessageCount: number = 0;
   unreadMessageCountSubscription: Subscription;
 
-  constructor(private messageService: MessageServiceService, private idService: IdServiceService){
+  constructor(private messageService: MessageServiceService, protected userService: UserService, private chatService: ChatService, private location: Location, private router: Router){
     this.unreadMessageCountSubscription = messageService.messageCountObservable.subscribe(
       unreadMessageCount => this.unreadMessageCount = unreadMessageCount
     );
 
-    idService.nameObservable.subscribe(name => this.name = name)
-    this.id = idService.id
+    console.log("rendered")
+
+    location.onUrlChange((url, state) => {
+      
+      console.log(url)
+      this.navStatus = new Array(2).fill(0)
+      if(url.includes("home")){
+        this.navStatus[0] = 1
+      }
+      else if(url.includes("profile")){
+        this.navStatus[1] = 1
+      }
+    })
+
   }
 
   toggleChatWidgetVisibility(){
@@ -43,6 +57,12 @@ export class AppComponent{
   }
 
   changeName(e: any){
-    this.idService.name = e.target.value
+    this.userService.name = e.target.value
   }
+
+  
+  some(e: any){
+    this.chatService.sendMessage("message")
+  }
+
 }

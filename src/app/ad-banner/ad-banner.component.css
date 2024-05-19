@@ -1,4 +1,13 @@
 .ad-container{
+    box-sizing: border-box;
     height: 100%;
     border: 1px solid black;
+}
+
+.container-left {
+    border-bottom-left-radius: 1rem;
+}
+
+.container-right {
+    border-bottom-right-radius: 1rem;
 }

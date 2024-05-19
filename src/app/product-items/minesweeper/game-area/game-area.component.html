@@ -1,0 +1,3 @@
+<div *ngIf="gameOver" class="game-over-message">{{gameOverMessage}}</div>
+<div *ngFor="let item of tilesMap; index as i;" class="minesweeper-tile" id="{{i}}" [style.width.%]="tileSize" [style.height.%]="tileSize" (click)="logClick($event)">
+</div>

@@ -1,11 +1,23 @@
 .container {
     width: fit-content;
-    margin: auto
-    /* display: flex;
-    flex-wrap: wrap;
-    justify-content: center; */
+    margin: auto;
+    box-sizing: border-box;
+    padding: 20% 0;
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
-/* h1{
-    text-align: center;
-    width: 100%;
-} */
+form {
+    flex-grow: 1;
+    margin-top: 10%;
+}
+
+form div{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+form button {
+    margin: 10% 10%;
+}

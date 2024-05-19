@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+body{
+    margin: 0px;
+    /* border: 4px solid #ec1010c4; */
+    min-height: 100vh;
+    width: 100%;
+    padding: 0.4rem;
+    background-color: black;
+    box-sizing: border-box;
+    display: flex;
+}
+
+
+.app-container{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    /* font-size: large; */
+}
+/* 
+@font-face {
+    font-family: big-fans;
+    src: url(./assets/Bigfans.ttf);
+  }
+
+*{
+    font-family: big-fans;
+} */

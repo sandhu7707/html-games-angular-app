@@ -1,10 +1,30 @@
 
 <router-outlet></router-outlet>
 
-<div class="products-container">
     <ul class="products-list">
         <li class="product-item">
-            <a routerLink="/products/minesweeper/{{id}}">Minesweeper</a>
+                <h2>Minesweeper</h2>
+                <div>
+                    <h3>Active Rooms</h3>
+                    <ul>
+                        <li class="rooms-list-item" *ngFor="let room of rooms[MINESWEEPER_ID]; index as i;">
+                            <div>
+                                <h4 class="room-name">{{room.name}}</h4>
+                                <button [hidden]="alreadyJoined(room.roomId, false, null)" class="join-button" (click)="joinRoom(MINESWEEPER_ID, i)">Join</button>
+                                <button [hidden]="!alreadyJoined(room.roomId, false, null)" class="join-button" (click)="leaveRoom(MINESWEEPER_ID, room.roomId)">Leave Room</button>
+                                <div class="room-info">
+                                    <h5>Host</h5>
+                                    <div>{{room.hostId}}</div>
+                                    <h5>Players</h5>
+                                    <ul class="players-list"><li *ngFor="let player of room.players">{{player}}</li></ul>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <button [hidden]="alreadyJoined(null, false, null)" (click)="createRoom(MINESWEEPER_ID)">Create Room</button>
         </li>
     </ul>
-</div>
+
+    
+    already joined: {{alreadyJoined(null, null, null)}}

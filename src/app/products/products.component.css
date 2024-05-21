@@ -1,0 +1,71 @@
+.products-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 2rem;
+    /* grid-auto-rows: 25vh; */
+}
+
+.product-item {
+    border: 4px ridge gold;
+    list-style-type: none;
+    align-content: center;
+    padding: 1rem;
+    background: aliceblue;
+    border-radius: 3vh;
+    display: grid;
+    grid-template-areas:
+        "h2 div"
+        "button div";
+    grid-template-columns: 1fr 3fr;
+    grid-template-rows: 4fr 1fr;
+
+}
+
+button{
+    height: 1.5rem;
+    width: fit-content;
+    border-radius: 2rem;
+    border-width: 0;
+    background-color: #cfc8bc;
+}
+
+button:hover{
+    cursor: pointer;    
+    background-color: #a8a298;
+}
+
+h2, button{
+    align-self: center;
+    justify-self: center;
+}
+
+h4.room-name{
+    display: inline;
+}
+
+button.join-button{
+    float: right;
+    margin: 0.5rem;
+}
+
+.room-info{
+    display: flex;
+    margin-block-start: 0.5rem;
+}
+
+h5{
+    width: fit-content;
+    margin: 0;
+    margin-inline-end: 1rem;
+    margin-inline-start: 2rem;
+}
+
+.players-list{
+    list-style-type: none;
+}
+
+.rooms-list-item{
+    list-style-type: none;
+    border: 3px groove white;
+    margin-block-end: 0.25rem
+}

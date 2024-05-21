@@ -23,8 +23,6 @@ const db = pgp(cn)
 const qrec = pgp.errors.queryResultErrorCode;
 const no_record_found = "No Data Found"
 
-const activeGames = []
-
 app.get('/', (req, res) => {
     res.send('Hello World!')
 })
@@ -121,16 +119,34 @@ var aWss = expressWs.getWss('/')
 appWs.use(cors({
     origin: 'http://localhost:4200'
 }))
-appWs.ws('/', function(ws, req) {
-    console.log('Socker Connected');
+
+const rooms = {}
+
+appWs.ws('/', function(ws, req, res) {
+    console.log('Socket Connected');
 
     ws.onmessage = function(msg){
-        console.log(msg.data)
-        console.log(aWss.clients)
-        aWss.clients.forEach(client => {
-            client.send(msg.data)
-        });
+        const message = JSON.parse(msg.data)
+        if(message && message.type === "rooms-update"){
+            rooms[message.key] = message.value;
+            console.log(rooms)
+            aWss.clients.forEach(client => {
+                sendMessage(client,{type: message.type, data: rooms})
+            });
+        }
+        else if(message && message.type === "login"){
+            console.log("login from ", message.userId)
+            sendMessage(ws,{type:"rooms-update", data: rooms})
+        }
     }
+})
+
+function sendMessage(ws, data){
+    ws.send(JSON.stringify(data))
+}
+
+appWs.get('/', (req, res) => {
+    console.log("received", req)
 })
 
 appWs.listen(portWs, () => {console.log("another one")})

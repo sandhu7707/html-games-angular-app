@@ -9,7 +9,7 @@ import { MessageServiceService } from './services/message-service/message-servic
 import { UserService } from './services/id-service/user.service';
 import { AdBannerComponent } from './ad-banner/ad-banner.component';
 import { CommonModule, Location } from '@angular/common';
-import { ChatService } from './services/chat-service/chat.service';
+import { BroadcastService } from './services/chat-service/broadcast.service';
 
 @Component({
   selector: 'app-root',
@@ -28,7 +28,7 @@ export class AppComponent{
   unreadMessageCount: number = 0;
   unreadMessageCountSubscription: Subscription;
 
-  constructor(private messageService: MessageServiceService, protected userService: UserService, private chatService: ChatService, private location: Location, private router: Router){
+  constructor(private messageService: MessageServiceService, protected userService: UserService, private chatService: BroadcastService, private location: Location, private router: Router){
     this.unreadMessageCountSubscription = messageService.messageCountObservable.subscribe(
       unreadMessageCount => this.unreadMessageCount = unreadMessageCount
     );
@@ -62,7 +62,7 @@ export class AppComponent{
 
   
   some(e: any){
-    this.chatService.sendMessage("message")
+    this.chatService.sendMessage({type: 'state-update',"key":"broadcast","value":"broadcast"})
   }
 
 }

@@ -41,7 +41,6 @@ export class MinesweeperComponent {
   // 3 -> over/finish screen
 
   startGame(){
-    console.log("sadasd", this.gameConf.value)
 
     let tilesNum: number = this.gameConf.value.tilesNum ? this.gameConf.value.tilesNum: this.defaultTilesNum
     this.tileMap = new Array(tilesNum).fill(0)

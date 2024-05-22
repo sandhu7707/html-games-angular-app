@@ -1,30 +1,34 @@
-
-<router-outlet></router-outlet>
-
+<div class="app-products">
+    <div class="game-room-container">
+        <router-outlet></router-outlet>
+    </div>
     <ul class="products-list">
         <li class="product-item">
+            <div class="product-name">
                 <h2>Minesweeper</h2>
-                <div>
+            </div>
+                <div class="product-rooms">
                     <h3>Active Rooms</h3>
                     <ul>
                         <li class="rooms-list-item" *ngFor="let room of rooms[MINESWEEPER_ID]; index as i;">
                             <div>
                                 <h4 class="room-name">{{room.name}}</h4>
-                                <button [hidden]="alreadyJoined(room.roomId, false, null)" class="join-button" (click)="joinRoom(MINESWEEPER_ID, i)">Join</button>
+                                <span class="room-players-number">{{room.players.length}}</span>
+                                <button [hidden]="alreadyJoined(null, false, null)" class="join-button" (click)="joinRoom(MINESWEEPER_ID, room.roomId)">Join</button>
                                 <button [hidden]="!alreadyJoined(room.roomId, false, null)" class="join-button" (click)="leaveRoom(MINESWEEPER_ID, room.roomId)">Leave Room</button>
-                                <div class="room-info">
+                                <!-- <div class="room-info">
                                     <h5>Host</h5>
                                     <div>{{room.hostId}}</div>
                                     <h5>Players</h5>
                                     <ul class="players-list"><li *ngFor="let player of room.players">{{player}}</li></ul>
-                                </div>
+                                </div> -->
                             </div>
                         </li>
                     </ul>
                 </div>
+            <div class="create-room-button">
                 <button [hidden]="alreadyJoined(null, false, null)" (click)="createRoom(MINESWEEPER_ID)">Create Room</button>
+            </div>
         </li>
     </ul>
-
-    
-    already joined: {{alreadyJoined(null, null, null)}}
+</div>

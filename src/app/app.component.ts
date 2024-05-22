@@ -9,7 +9,7 @@ import { MessageServiceService } from './services/message-service/message-servic
 import { UserService } from './services/id-service/user.service';
 import { AdBannerComponent } from './ad-banner/ad-banner.component';
 import { CommonModule, Location } from '@angular/common';
-import { BroadcastService } from './services/chat-service/broadcast.service';
+import { BroadcastService } from './services/broadcast-service/broadcast.service';
 
 @Component({
   selector: 'app-root',

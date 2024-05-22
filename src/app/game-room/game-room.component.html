@@ -1,3 +1,20 @@
-<p>game-room works!</p>
-<h1>game id: {{gameId}}</h1>
-<h1>room Id: {{roomId}}</h1>
+<div class="game-room">
+    <div *ngIf="room" class="players-container">
+        <div class="room-info">
+            <h3>{{room.name}}</h3>
+            <h4>Host: {{hostName}}</h4>
+            <h4>Dealer: {{dealerName}}</h4>
+        </div>
+        <div class="players-list-container">
+            <!-- <h4>Players </h4> -->
+            <ul class="players-list">
+                <li *ngFor="let player of room.players;">
+                    <div [class]="player.ready ? 'ready-player': 'unready-player'">
+                        {{player.name}}
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <button (click)="toggleReady()">{{readyButtonLabel()}}</button>
+    </div>
+</div>

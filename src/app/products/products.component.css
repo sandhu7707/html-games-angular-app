@@ -1,24 +1,44 @@
 .products-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 2rem;
-    /* grid-auto-rows: 25vh; */
+    padding: 0;
 }
 
 .product-item {
     border: 4px ridge gold;
     list-style-type: none;
     align-content: center;
-    padding: 1rem;
-    background: aliceblue;
+    padding: 0.2rem;
+    background-color: rgb(34, 43, 51, 0.8);
     border-radius: 3vh;
     display: grid;
     grid-template-areas:
-        "h2 div"
-        "button div";
+        "product-name product-rooms"
+        "create-room-button product-rooms";
     grid-template-columns: 1fr 3fr;
     grid-template-rows: 4fr 1fr;
+    column-gap: 0.2rem;
+    margin: auto;
+}
 
+.product-name{
+    border-top-left-radius: 3vh;
+    grid-area: product-name;
+}
+
+.product-rooms{
+    border-top-right-radius: 3vh;
+    border-bottom-right-radius: 3vh;
+    grid-area: product-rooms;
+}
+
+.create-room-button{
+    border-bottom-left-radius: 3vh;
+    grid-area: create-room-button;
+}
+
+.product-item .product-name,.product-rooms,.create-room-button {
+    background-color: aliceblue;
+    width: 100%;
+    height: 100%;
 }
 
 button{
@@ -34,9 +54,20 @@ button:hover{
     background-color: #a8a298;
 }
 
-h2, button{
+.product-name, .create-room-button{
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+    box-sizing: border-box;
+}
+
+.product-name h2, .create-room-button button{
     align-self: center;
-    justify-self: center;
+}
+
+.product-rooms {
+    padding-left: 1rem;
+    box-sizing: border-box;
 }
 
 h4.room-name{
@@ -44,11 +75,12 @@ h4.room-name{
 }
 
 button.join-button{
-    float: right;
-    margin: 0.5rem;
-}
+    /* float: right; */
+    margin-inline-start: 0.5rem;
+    height: 1.25rem; 
+ } 
 
-.room-info{
+/* .room-info{
     display: flex;
     margin-block-start: 0.5rem;
 }
@@ -62,10 +94,24 @@ h5{
 
 .players-list{
     list-style-type: none;
+}*/
+
+ .rooms-list-item{
+    list-style-type: none;
+    /* border: 3px groove white; */
+    margin-block-end: 0.25rem
 }
 
-.rooms-list-item{
-    list-style-type: none;
-    border: 3px groove white;
-    margin-block-end: 0.25rem
+.app-products{
+    width: 100%;
+}
+
+.game-room-container{
+    width: 100%;
+}
+
+.room-players-number{
+    border: 1px solid rgb(110, 168, 190);
+    background-color: skyblue;
+    margin-inline-start: 1em;
 }

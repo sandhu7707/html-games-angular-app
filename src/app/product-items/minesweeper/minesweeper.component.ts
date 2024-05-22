@@ -35,7 +35,7 @@ export class MinesweeperComponent {
   tileMap!: number[];
   
   gameState: number = 0;
-  // 0 -> start screen
+  // 0 -> start screen -> waiting area/ dealer screen for dealer -> move to 1 when all ready
   // 1 -> currently playing
   // 2 -> paused 
   // 3 -> over/finish screen

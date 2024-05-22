@@ -12,11 +12,15 @@ export class BroadcastService {
   webSocket!: WebSocket
 
   _roomState = new Subject<any>
-  currentRoomState: any = {}
+  currentRoomState!: any
   roomStateObservable = this._roomState.asObservable() 
   set roomState(roomState: any){
     this._roomState.next(roomState)
     this.currentRoomState = roomState
+  }
+
+  get roomState() {
+    return this.currentRoomState
   }
 
   constructor( private userService: UserService) {

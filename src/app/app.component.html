@@ -1,5 +1,5 @@
 <div class="header-bar">
-  <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="name" (input)="changeName($event)"/></h1>
+  <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="userService.name" (input)="changeName($event)"/></h1>
   <nav class="navigation-menu">
     <ul *ngIf="userService.loggedIn">
       <li class="navigation-item">

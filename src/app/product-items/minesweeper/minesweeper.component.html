@@ -1,5 +1,4 @@
 <div class="container">
-<p>minesweeper - {{id}}</p>
 <div class="game-area">
     <div class="game-container">
         <div *ngIf="gameState===0">
@@ -19,18 +18,20 @@
                 <button type="sumbit" [disabled]="gameConf.errors?.['numberOfMinesGreaterThanNumberOfTiles']">Start</button>
             </form>
         </div>
-        <app-game-area class="gameplay-area" *ngIf="gameState===1" [tilesMap]="tileMap" [gameContainer]="gameContainer" (gameResult)="onGameResult($event)" #gameContainer></app-game-area>
+        <app-game-area class="gameplay-area" *ngIf="gameState===1 || gameState===3" (tilesMapOutput)="updateTilesMap($event)" [minesNum]="minesNum" [gameReady]="room.ready" [tilesMap]="tileMap" [gameContainer]="gameContainer" (gameResult)="onGameResult($event)" [minesMap]="minesMap" #gameContainer></app-game-area>
         <div *ngIf="gameState===2">
             2
         </div>
-        <div *ngIf="gameState===3">
-            3
+        <div *ngIf="gameState===3" class="results-container">
+            <div class="results">
+                <div *ngFor="let result of results">{{result}}</div>
+            </div>
         </div>
     </div>
     <div class="emulator-controls" *ngIf="gameState===1 || gameState===2">
-        <button (click)="onPauseClick()">{{gameState===1 ? "Pause" : "Play"}}</button>
+        <!-- <button (click)="onPauseClick()">{{gameState===1 ? "Pause" : "Play"}}</button>
         <button (click)="restartGame()">Restart</button>
-        <button (click)="this.gameState=0">Start Screen</button>
+        <button (click)="this.gameState=0">Start Screen</button> -->
     </div>
 </div>
 </div>

@@ -1,3 +1,7 @@
+
+
+<!-- <button (click)="startGameRoom()">Start GameRoom</button> -->
+
 <div class="game-room">
     <div *ngIf="room" class="players-container">
         <div class="room-info">
@@ -6,7 +10,7 @@
             <h4>Dealer: {{dealerName}}</h4>
         </div>
         <div class="players-list-container">
-            <!-- <h4>Players </h4> -->
+            <h4>Players </h4>
             <ul class="players-list">
                 <li *ngFor="let player of room.players;">
                     <div [class]="player.ready ? 'ready-player': 'unready-player'">

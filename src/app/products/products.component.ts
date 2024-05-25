@@ -58,6 +58,7 @@ export class ProductsComponent {
   }
 
   alreadyJoined(roomId: number | null, navigate: boolean | null, gameId: string | null){
+    // console.log("check already joined")
     for(let i in {...this.rooms}){
       const playerRooms = {...this.rooms}[i].filter((room: any) => room.players.filter((player: any) => player.id === this.userId).length > 0);
       if(playerRooms.length > 0){
@@ -77,6 +78,7 @@ export class ProductsComponent {
 
   leaveRoom(gameId: string, roomId: number){
     const gameRooms = this.rooms[gameId]
+    console.log(gameRooms)
     for(let i in gameRooms){
       if(gameRooms[i].roomId !== roomId) {
         continue;
@@ -85,14 +87,18 @@ export class ProductsComponent {
         if(window.confirm('leaving this room will remove the room, proceed ?')){
           gameRooms.splice(i, 1)
           this.updateRoomState(gameId, gameRooms)
+          this.broadcastService.closeGameRoom()
         }
         return;
       }
 
-      let player = this.rooms[gameId][i].players.filter((player: any) => player.id === this.userId);
-      if(player.length > 0){
-        player.splice(0, 1)
+      let player = gameRooms[i].players.find((player: any) => player.id === this.userId);
+      if(player){
+        console.log(player)
+        gameRooms[i].players.splice(gameRooms[i].players.indexOf(player), 1)
+        console.log(gameRooms)
         this.updateRoomState(gameId, gameRooms)
+        this.broadcastService.removePlayer(gameId, roomId)
         this.router.navigate([`/products`])
         return;
       }

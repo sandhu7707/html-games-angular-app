@@ -5,6 +5,8 @@ import { HttpClient } from '@angular/common/http';
 import { UserService } from '../services/id-service/user.service';
 import { User } from '../services/id-service/user.type';
 import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
+// import { IP_ADDR } from '../../main';
 // const x = 3;
 
 @Component({
@@ -31,7 +33,7 @@ export class FormComponentComponent{
 
   onRegister(e: any){
     // console.log(this.inputControl.value)
-    this.httpClient.post<User>('http://localhost:3000/user/register', this.inputControl.value)
+    this.httpClient.post<User>(`${environment.serverHttpUrl}user/register`, this.inputControl.value)
     .subscribe({
       next: (user) => {
         this.userService.initUserService(user)
@@ -43,7 +45,7 @@ export class FormComponentComponent{
 
   onSignIn(e: any){
     console.log("sign in")
-    this.httpClient.post<User>('http://localhost:3000/user/authenticate', this.inputControl.value)
+    this.httpClient.post<User>(`${environment.serverHttpUrl}user/authenticate`, this.inputControl.value)
     .subscribe({
       next: (user) => {
         this.userService.initUserService(user)

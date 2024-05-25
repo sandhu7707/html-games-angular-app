@@ -2,7 +2,7 @@ import { Component, Input, AfterContentInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BroadcastService } from '../services/broadcast-service/broadcast.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { UserService } from '../services/id-service/user.service';
 import { read } from 'fs';
 
@@ -17,60 +17,65 @@ export class GameRoomComponent implements AfterContentInit{
 
   @Input() gameId!: string
   @Input() roomId!: string
+  updateRoom!: (room: any) => void
   hostName!: string
   dealerName!: string
   room!: any
-  broadcastServiceSubscription: Subscription
+  // broadcastServiceSubscription: Subscription
   ready!: boolean
   userId!: string
 
   constructor(private broadcastService: BroadcastService, private router: Router, private userService: UserService) {
     this.userId = userService.id
-    this.broadcastServiceSubscription = broadcastService.roomStateObservable.subscribe((roomState) => {
-      this.setRoom(roomState)
-    })
   }
 
-  setRoom(roomState: any){
-    if(!this.gameId){
-      return
-    }
-    if(roomState[this.gameId]){
-      const room = roomState[this.gameId].filter((room: any) => room.roomId === parseInt(this.roomId))[0]
-      if(room){
+  startGameRoom(){
+    this.updateRoom = this.broadcastService.startGameRoom(this.gameId, parseInt(this.roomId),
+     (message: any) => {
+      console.log("game-room message received", message)
+      if(message.type === 'init' && message.data !== 0){
+        alert('this room doesn\'t exist anymore')
+        this.broadcastService.gameRoom.close()
+        this.router.navigate(['/products'])
+      }
+      else if(message.type === 'update'){
+        console.log(message.data)
+        const room = message.data
         this.room = room
         this.hostName = room.players.find((player: any) => player.id === room.hostId).name
         this.ready = room.players.find((player: any) => player.id === this.userId).ready
-        this.dealerName = room.players.find((player: any) => player.id === room.dealerId).name
-        console.log(room)
-        return
+        this.dealerName = room.players.find((player: any) => player.id === room.dealerId).name  
       }
-    }
-  
-    console.log("doesn't exist", this.roomId, roomState)
-    alert('this room doesn\'t exist anymore')
-    this.broadcastServiceSubscription.unsubscribe()
-    this.router.navigate(['/products'])
+    })
 
+    console.log(this.updateRoom)
   }
 
   ngAfterContentInit(): void {
-    console.log(this.roomId, this.broadcastService.currentRoomState)
-    if(this.broadcastService.currentRoomState){
-      this.setRoom(this.broadcastService.currentRoomState)
-    }
+    this.startGameRoom()
   }
 
   readyButtonLabel(){
-    return this.ready ? "Not Ready" : "Ready"
+    return this.room.dealerId === this.userId ? this.ready ? "Not Ready" : "Ready" : this.ready ? "Restart" : "Start"
   }
 
   toggleReady(){
-    const gameRooms = Object.assign([], this.broadcastService.roomState[this.gameId])
-    const room = gameRooms.filter((room: any) => room.roomId === this.roomId)
-    this.room.players.filter((player: any) => player.id === this.userId)[0].ready = !this.ready
-    room[0] = this.room
-    this.broadcastService.updateRoomState(this.gameId, gameRooms)
+    if(!this.ready && this.room.dealerId === this.userId){
+      this.router.navigate([`products/game/${this.gameId}/${this.roomId}/play`])
+    }
+    else if(!this.room.ready){
+      alert('Room is not ready')
+    }
+    else if(!this.ready && this.room.ready === true){
+      // const gameRooms = Object.assign([], this.broadcastService.roomState[this.gameId])
+      // const room = gameRooms.filter((room: any) => room.roomId === this.roomId)
+      this.room.players.filter((player: any) => player.id === this.userId)[0].ready = !this.ready
+      this.updateRoom(this.room)
+      this.router.navigate([`products/game/${this.gameId}/${this.roomId}/play`])
+    }
+    else if(this.ready){
+      this.ready = !this.ready
+    }
   }
 
   getReadyOrNotClass(ready: boolean){

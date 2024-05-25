@@ -2,6 +2,7 @@ import { EventEmitter, Injectable, Output } from '@angular/core';
 import { UserService } from '../id-service/user.service';
 import { RoomState } from './RoomState.type';
 import { Subject } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +29,7 @@ export class BroadcastService {
       this.initChatService(userService.currentId)
     }
     userService.idObservable.subscribe((id) => this.initChatService(id))
-   }
+  }
 
   initChatService(id: string) {
     if(!id && this.webSocket){
@@ -36,7 +37,7 @@ export class BroadcastService {
       console.log("closed chat ws")
     }
     this.userId = id
-    this.webSocket = new WebSocket("ws://localhost:3333/")
+    this.webSocket = new WebSocket(environment.serverWsUrl)
     this.webSocket.onopen = (event) => {
       console.log("sent message..........")
       this.sendMessage({type: 'login'})
@@ -69,4 +70,33 @@ export class BroadcastService {
     )
   }
 
+  gameRoom!: WebSocket
+  updateGameRoom!: (room: any) => void
+  removePlayer!: (gameId: string, roomId: number) => void
+  
+  startGameRoom(gameId: string, roomId: number, updateRoom: (room: any) => void){
+    console.log(this.gameRoom, "starting room")
+    this.gameRoom = new WebSocket(`${environment.serverWsUrl}game/${gameId}/room/${roomId}`)
+    this.gameRoom.onmessage = (event) => updateRoom(JSON.parse(event.data))
+    this.gameRoom.onopen = (event) => {
+      console.log("sending game room init")
+      this.gameRoom.send(JSON.stringify({type: 'init', userId: this.userId}))
+    }
+    this.updateGameRoom = (room: any) => this.gameRoom.send(JSON.stringify({type: 'update', data: room, userId: this.userId}))
+    this.removePlayer = (room:any) => this.gameRoom.send(JSON.stringify({type: 'remove-player', data: {gameId: gameId, roomId: roomId}, userId: this.userId}))
+    return this.updateGameRoom
+  }
+
+  closeGameRoom(){
+    this.gameRoom.send(JSON.stringify({type: 'init', data: -1}))
+  }
+
+  updateGameRoomListener(gameId: string, roomId: number, updateRoom: (room: any) => void){
+    // if(!this.gameRoom){
+    //   return this.startGameRoom(gameId, roomId, updateRoom)
+    // }
+    this.gameRoom.onmessage = (event) => updateRoom(JSON.parse(event.data))
+    this.gameRoom.send(JSON.stringify({type: 'get-update'}))
+    return this.updateGameRoom
+  }
 }

@@ -7,3 +7,4 @@ bootstrapApplication(AppComponent, appConfig)
   .catch((err) => console.error(err));
 
   // exportv localStorage = window.localStorage
+  // export const IP_ADDR = process.env['IP_ADDR']

@@ -10,12 +10,12 @@
                 <div class="product-rooms">
                     <h3>Active Rooms</h3>
                     <ul>
-                        <li class="rooms-list-item" *ngFor="let room of rooms[MINESWEEPER_ID]; index as i;">
+                        <li class="rooms-list-item" *ngFor="let room of rooms[MINESWEEPER_ID] | keyvalue">
                             <div>
-                                <h4 class="room-name">{{room.name}}</h4>
-                                <span class="room-players-number">{{room.players.length}}</span>
-                                <button [hidden]="alreadyJoined(null, false, null)" class="join-button" (click)="joinRoom(MINESWEEPER_ID, room.roomId)">Join</button>
-                                <button [hidden]="!alreadyJoined(room.roomId, false, null)" class="join-button" (click)="leaveRoom(MINESWEEPER_ID, room.roomId)">Leave Room</button>
+                                <h4 class="room-name">{{room.value.name}} {{room.key}}</h4>
+                                <span class="room-players-number">{{room.value.players.length}}</span>
+                                <button [hidden]="alreadyJoined(null, false, null)" class="join-button" (click)="joinRoom(MINESWEEPER_ID, room.key)">Join</button>
+                                <button [hidden]="!alreadyJoined(room.key, false, null)" class="join-button" (click)="leaveRoom(MINESWEEPER_ID, room.key)">Leave Room</button>
                                 <!-- <div class="room-info">
                                     <h5>Host</h5>
                                     <div>{{room.hostId}}</div>

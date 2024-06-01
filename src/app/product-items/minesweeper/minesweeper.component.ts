@@ -59,7 +59,10 @@ export class MinesweeperComponent implements AfterContentInit{
   constructor(private userService: UserService, private broadcastService: BroadcastService, private router: Router){
 
     console.log("minesweeper constructor init", this.broadcastService.gameRoom)
-    this.userId = userService.id
+    if(userService.id)
+      this.userId = userService.id
+    else
+      router.navigate(['/'])
   }
 
   ngAfterContentInit(): void {

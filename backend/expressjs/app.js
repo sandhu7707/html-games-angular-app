@@ -5,8 +5,8 @@ const cors = require('cors')
 if(!process.argv[2]){
     throw new Error("no origin specified");
 }
-else if(!process.argv[2].match(/https{0,1}:\/\/[\w,:,.]*\/$/)){
-    throw new Error(`allowed origin ${process.argv[2]} doesn't match format http[s]://[\\w,:,.]*/`)
+else if(!process.argv[2].match(/https{0,1}:\/\/[\w,:,.]*$/)){
+    throw new Error(`allowed origin ${process.argv[2]} doesn't match format http[s]://[\\w,:,.]*$`)
 }
 const allowedOrigins = [process.argv[2]]
 
@@ -169,7 +169,7 @@ appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
         }
     }
 
-    const room = roomsInfos[gameId] ? {...roomsInfos}[gameId].find((room) => room.roomId === parseInt(roomId)) : null
+    const room = roomsInfos[gameId] ? {...roomsInfos}[gameId][parseInt(roomId)] : null
 
     ws.onmessage = function(msg){    
         console.log("received", msg)

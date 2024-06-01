@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, NgZone, ViewChild, Input } from '@angular/core';
 import { UserService } from '../services/id-service/user.service';
 import { AdsService } from '../services/ads-service/ads.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ad-banner',
@@ -17,8 +18,11 @@ export class AdBannerComponent implements AfterViewInit{
 
   @ViewChild("adContainer") adContainer!: any;
 
-  constructor(private idService: UserService, private adsService: AdsService, private ngZone: NgZone){
-    this.id = idService.id
+  constructor(private idService: UserService, private adsService: AdsService, private ngZone: NgZone, router: Router){
+    if(idService.id)
+      this.id = idService.id
+    else
+      router.navigate(['/'])
   }
 
   ngAfterViewInit(): void {

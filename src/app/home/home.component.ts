@@ -4,6 +4,7 @@ import { PersonalSectionComponent } from '../personal-section/personal-section.c
 import { CommonModule } from '@angular/common';
 import { CommonContentDirective } from './common-content.directive';
 import { ProductsComponent } from '../products/products.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -18,12 +19,20 @@ export class HomeComponent {
   id!: string;
   tags: string[] = [];
 
-  constructor(idService: UserService){
+  constructor(idService: UserService, router: Router){
     idService.nameObservable.subscribe((name) => {
-      this.name = name;
+      if(name){
+        this.name = name;
+      }
+      else{
+        router.navigate(['/'])
+      }
     })
 
-    this.id = idService.id
+    if(idService.id)
+      this.id = idService.id
+    else
+      router.navigate(['/'])
   }
 
   addTag(tag: string){

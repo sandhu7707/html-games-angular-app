@@ -26,7 +26,10 @@ export class GameRoomComponent implements AfterContentInit{
   userId!: string
 
   constructor(private broadcastService: BroadcastService, private router: Router, private userService: UserService) {
-    this.userId = userService.id
+    if(userService.id)
+      this.userId = userService.id
+    else
+      router.navigate(['/'])
   }
 
   startGameRoom(){

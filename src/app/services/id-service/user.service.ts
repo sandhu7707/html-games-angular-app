@@ -9,31 +9,33 @@ export class UserService {
 
   loggedIn!: boolean
 
-  username!: string
-  currentId!: string 
-  currentNickname!: string
+  username!: string|null
+  currentId!: string|null 
+  currentNickname!: string|null
 
-  _id = new Subject<string>;
+  _id = new Subject<string|null>;
   idObservable = this._id.asObservable();
-  set id(id: string){
+  set id(id: string|null){
     this._id.next(id)
     this.currentId = id
   }
 
-  get id(){
+  get id(): string|null{
     return this.currentId;
   }
 
-  _name = new Subject<string>;
+  _name = new Subject<string|null>;
   nameObservable = this._name.asObservable();
 
-  set name(name: string) {
+  set name(name: string|null) {
     this._name.next(name)
-    localStorage.setItem("nickname", name)
+    if(name){
+      localStorage.setItem("nickname", name)
+    }
     this.currentNickname = name
   }
 
-  get name(){
+  get name(): string|null{
     return this.currentNickname
   }
 
@@ -71,6 +73,9 @@ export class UserService {
   logout(){
     if(this.isBrowser()){
       localStorage.clear()
+      this.id = null
+      this.username = null
+      this.name = null
       this.loggedIn = false;
     }
   }

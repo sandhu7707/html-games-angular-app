@@ -2,12 +2,13 @@ IPADDR=$(dig +short myip.opendns.com @resolver4.opendns.com)
 
 cat <<ENV > src/environments/environment.aws.server.params
 export const environment = {
-        serverHttpUrl: 'http://$IPADDR/',
-        serverWsUrl: 'http://$IPADDR/'
+        serverHttpUrl: 'http://$IPADDR:3000/',
+        serverWsUrl: 'http://$IPADDR:3333/'
 }
 ENV
 
-ng build --configuration production
+npm install
+npm run ng build --configuration=production --base-href=http://$IPADDR:4200/
 
 #touch .env
 #cat <<ENV > .env

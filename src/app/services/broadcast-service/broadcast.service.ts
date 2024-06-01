@@ -28,7 +28,11 @@ export class BroadcastService {
     if(userService.currentId){
       this.initChatService(userService.currentId)
     }
-    userService.idObservable.subscribe((id) => this.initChatService(id))
+    userService.idObservable.subscribe((id) => {
+      if(id){
+        this.initChatService(id)
+    }
+  })
   }
 
   initChatService(id: string) {

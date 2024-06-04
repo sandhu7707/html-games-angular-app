@@ -16,6 +16,7 @@ export class GameAreaComponent implements AfterContentInit{
   @Output() tilesMapOutput = new EventEmitter<number[]>;
   @ViewChild("gameplayArea") gameplayArea!: ElementRef
   @Input() gameContainer!: any;
+  @Input() playerResult!: GameResult
   tileSize!: number
   @Output() gameResult = new EventEmitter<GameResult>()
 
@@ -34,7 +35,7 @@ export class GameAreaComponent implements AfterContentInit{
   }
 
   ngAfterContentInit(): void {
-    console.log(this.tilesMap)
+    console.log(this.tilesMap, "gameReady: ", this.gameReady)
     this.tileSize = 80/Math.ceil(Math.sqrt(this.tilesMap.length)) 
     console.log("tile size", this.tileSize, "tilesMap", this.tilesMap)
     this.mines = new Array(this.tilesMap.length).fill(0)
@@ -49,14 +50,15 @@ export class GameAreaComponent implements AfterContentInit{
       console.log(e.target.id)
       if(this.minesMap[e.target.id] === 0){
         e.target.classList.add("safe")
-        // e.target.style.backgroundColor = 'white'
+        this.mines[e.target.id] = -1
         this.safeTiles++;
       }
       else{
         e.target.classList.add("mine")
-        // e.target.style.backgroundColor = 'red'
+        this.mines[e.target.id] = 1
         this.gameOver = true
         const result = {
+          tilesMap: this.mines,
           areaCovered: this.safeTiles*100/this.tilesMap.length
         };
         this.gameOverMessage = `${result.areaCovered}: ${100 - result.areaCovered}`;
@@ -68,21 +70,34 @@ export class GameAreaComponent implements AfterContentInit{
       console.log(e.target.id)
       e.target.classList.add("mine")
       this.mines[e.target.id] = 1
-      // this.tilesMap.splice(e.target.id, 1, 1)
       this.minesNum--;
-      // 
     }
 
     if(this.minesNum === 0){
       this.gameOver = true
-    //   this.mines.forEach((x,i) => this.tilesMap[i] = 1)
       this.tilesMapOutput.emit(this.mines)
+      const result = {
+        tilesMap: this.mines,
+        areaCovered: this.safeTiles*100/this.tilesMap.length
+      };
+      this.gameResult.emit(result)
     }
   }
 
-  // getTileClass(idx: number){
-    // return `minesweeper-tile ${this.minesMap[idx]===0 ? 'safe' : 'mine'}`
-  // }
+  getClass(idx: number){
+    if(!this.playerResult || !this.playerResult.tilesMap){
+      return 'minesweeper-tile'
+    }
+    let className = ''
+    if(this.playerResult.tilesMap[idx]===-1){
+      className = 'safe'
+    }
+    else if(this.playerResult.tilesMap[idx]===1){
+      className = 'mine'
+    }
+    return `minesweeper-tile ${className}`
+  }
+
 
 }
 

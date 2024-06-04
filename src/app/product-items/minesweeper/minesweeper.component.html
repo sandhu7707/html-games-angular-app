@@ -18,7 +18,7 @@
                 <button type="sumbit" [disabled]="gameConf.errors?.['numberOfMinesGreaterThanNumberOfTiles']">Start</button>
             </form>
         </div>
-        <app-game-area class="gameplay-area" *ngIf="gameState===1 || gameState===3" (tilesMapOutput)="updateTilesMap($event)" [minesNum]="minesNum" [gameReady]="room.ready" [tilesMap]="tileMap" [gameContainer]="gameContainer" (gameResult)="onGameResult($event)" [minesMap]="minesMap" #gameContainer></app-game-area>
+        <app-game-area class="gameplay-area" *ngIf="gameState===1 || gameState===3" (tilesMapOutput)="updateTilesMap($event)" [minesNum]="minesNum" [gameReady]="room.ready" [tilesMap]="tileMap" [gameContainer]="gameContainer" (gameResult)="onGameResult($event)" [minesMap]="minesMap" [playerResult]="gameResult" #gameContainer></app-game-area>
         <div *ngIf="gameState===2">
             2
         </div>
@@ -29,9 +29,6 @@
         </div>
     </div>
     <div class="emulator-controls" *ngIf="gameState===1 || gameState===2">
-        <!-- <button (click)="onPauseClick()">{{gameState===1 ? "Pause" : "Play"}}</button>
-        <button (click)="restartGame()">Restart</button>
-        <button (click)="this.gameState=0">Start Screen</button> -->
     </div>
 </div>
 </div>

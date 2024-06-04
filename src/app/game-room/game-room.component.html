@@ -2,8 +2,8 @@
 
 <!-- <button (click)="startGameRoom()">Start GameRoom</button> -->
 
-<div class="game-room">
-    <div *ngIf="room" class="players-container">
+<div *ngIf="room && !renderGame()" class="game-room">
+    <div class="players-container">
         <div class="room-info">
             <h3>{{room.name}}</h3>
             <h4>Host: {{hostName}}</h4>
@@ -21,4 +21,7 @@
         </div>
         <button (click)="toggleReady()">{{readyButtonLabel()}}</button>
     </div>
+</div>
+<div class="game-container" *ngIf="renderGame()">
+    <app-minesweeper (updateGameRoom)="updateRoom($event)" [room]="room"></app-minesweeper>
 </div>

@@ -6,14 +6,11 @@ import { UserService } from '../services/id-service/user.service';
 import { User } from '../services/id-service/user.type';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
-// import { IP_ADDR } from '../../main';
-// const x = 3;
 
 @Component({
   selector: 'app-form-component',
   standalone: true,
   imports: [FormsModule, CommonModule, ReactiveFormsModule],
-  // template: `<p>something ${x}</p>`,
   templateUrl: './form-component.component.html',
   styleUrl: './form-component.component.css'
 })

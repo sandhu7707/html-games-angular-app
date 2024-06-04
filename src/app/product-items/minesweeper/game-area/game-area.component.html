@@ -2,6 +2,6 @@
 
 <div *ngIf="!gameReady" class="mines-left-message">Mines Left: {{minesNum}}</div>
 <div class="tilesContainer">
-    <div *ngFor="let item of tilesMap; index as i;" class="minesweeper-tile" [id]="i" [style.width.%]="tileSize" [style.height.%]="tileSize" (click)="logClick($event)">
+    <div *ngFor="let item of tilesMap; index as i;" [class]="getClass(i)" [id]="i" [style.width.%]="tileSize" [style.height.%]="tileSize" (click)="logClick($event)">
     </div>
 </div>

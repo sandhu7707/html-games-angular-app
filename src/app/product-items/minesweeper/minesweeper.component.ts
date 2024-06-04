@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterContentInit, Component, ContentChild, ElementRef, Input, ViewChild} from '@angular/core';
+import { AfterContentInit, Component, ContentChild, ElementRef, Input, EventEmitter, Output} from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { RouterLink, RouterOutlet, Router } from '@angular/router';
 import { GameAreaComponent } from './game-area/game-area.component';
@@ -24,7 +24,6 @@ export class MinesweeperComponent implements AfterContentInit{
   @Input() roomId!: string
   ready!: boolean
   userId!: string
-  // @Input() id!: number;
   defaultTilesNum = 4
   defaultMinesNum = 2
   gameConf = new FormGroup({
@@ -42,8 +41,9 @@ export class MinesweeperComponent implements AfterContentInit{
   tileMap!: number[];
   
   minesMap!: number[];
-  room!: any
-  updateGameRoom!: (room: any) => void
+  
+  @Input() room!: any
+  @Output() updateGameRoom = new EventEmitter<any>
   minesNum!: number
 
   gameResult!: GameResult
@@ -71,22 +71,14 @@ export class MinesweeperComponent implements AfterContentInit{
       alert('this room doesn\'t exist anymore')
       this.router.navigate(['/products'])
     }
-    this.updateGameRoom = this.broadcastService.updateGameRoomListener(this.gameId, parseInt(this.roomId), (message) => {
-      console.log("updateGame Minesweeper")
-      if(message.type === 'init' && message.data !== 0){
-        alert('this room doesn\'t exist anymore')
-        this.broadcastService.gameRoom.close()
-        this.router.navigate(['/products'])
-      }
-      else if(message.type === 'update'){
-        console.log(message.data)
-        this.room = message.data
-        this.minesMap = this.room.tilesMap
+    console.log(this.room)
+    console.log(this.updateGameRoom)
+    this.minesMap = this.room.tilesMap
         this.results = []
         this.room.players.forEach((element: any) => {
           console.log(typeof element.result)
           if(element.result !== undefined && element.result !== null){
-            this.results.push(`${element.name}: ${element.result}`)
+            this.results.push(`${element.name}: ${element.result.areaCovered}`)
           }
         });
         console.log(this.results)
@@ -96,8 +88,11 @@ export class MinesweeperComponent implements AfterContentInit{
         if(this.room.dealerId !== this.userId && this.gameState === 0){
           this.gameState = 1
         }
-      }
-    })
+    const playerInfo = this.room.players.find((player: any) => player.id === this.userId);
+    if(playerInfo && playerInfo.result && playerInfo.result.tilesMap){
+      this.gameResult = playerInfo.result
+      this.gameState = 3
+    }
   }
 
 
@@ -107,28 +102,16 @@ export class MinesweeperComponent implements AfterContentInit{
     this.tileMap = new Array(tilesNum).fill(0)
     this.minesMap = new Array(tilesNum).fill(0)
     this.minesNum = this.gameConf.value.minesNum ? this.gameConf.value.minesNum : this.defaultMinesNum
-    // let minesNum: number = this.gameConf.value.minesNum ? this.gameConf.value.minesNum: this.defaultMinesNum
-    // while(minesNum > 0){
-    //   let i = Math.floor(Math.random()*tilesNum)
-    //   if(this.tileMap[i] === 0){
-    //     this.tileMap[i] = 1;
-    //     minesNum--;
-    //   }
-    // }
-
     this.gameState = 1;
   }
 
   updateTilesMap(tilesMap: number[]) {
     console.log(tilesMap)
-    // this.tileMap = new Array(...tilesMap)
-    this.room.ready = true;
-    const players = this.room.players.filter((player: any) => player.id === this.userId)
-    console.log(players)
-    players[0].ready = true
+    this.room['ready'] = true;
 
     this.room.tilesMap = tilesMap
-    this.updateGameRoom(this.room)
+    console.log(this.room)
+    this.updateGameRoom.emit(this.room)
     this.gameState = 3;
   }
 
@@ -145,13 +128,12 @@ export class MinesweeperComponent implements AfterContentInit{
 
   onGameResult(e: GameResult){
     console.log(e);
-    this.gameResult = e;
-    const result = e.areaCovered;
-    if(result !== undefined && result !== null){
-      this.room.players.filter((player:any) => player.id === this.userId)[0].result = result
+    // this.gameResult = e;
+    if(e !== undefined && e !== null){
+      this.room.players.filter((player:any) => player.id === this.userId)[0].result = e
     }
     console.log(this.room)
-    this.updateGameRoom(this.room)
+    this.updateGameRoom.emit(this.room)
     this.gameState = 3;
   }
 }

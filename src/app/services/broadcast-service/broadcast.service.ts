@@ -57,8 +57,19 @@ export class BroadcastService {
     }
   }
 
-  sendMessage(data: any){
+  sendMessage(data: any, onReply: null |((message: any, defaultHandler: undefined | ((message: any) => any)) => void) = null){
     const msg = {userId: this.userId, ...data}
+    if(onReply){
+      const originalHandler = this.webSocket.onmessage
+      this.webSocket.onmessage = (event: any) => {
+        console.log("before onReply..")
+        onReply(event, originalHandler?.bind(this.webSocket))
+        console.log("after onReply..")
+        this.webSocket.onmessage = originalHandler
+        console.log(this.webSocket.onmessage)
+      }
+    }
+    
     this.webSocket.send(JSON.stringify(msg))
   }
 
@@ -75,8 +86,6 @@ export class BroadcastService {
   }
 
   gameRoom!: WebSocket
-  updateGameRoom!: (room: any) => void
-  removePlayer!: (gameId: string, roomId: number) => void
   
   startGameRoom(gameId: string, roomId: number, updateRoom: (room: any) => void){
     console.log(this.gameRoom, "starting room")
@@ -86,21 +95,50 @@ export class BroadcastService {
       console.log("sending game room init")
       this.gameRoom.send(JSON.stringify({type: 'init', userId: this.userId}))
     }
-    this.updateGameRoom = (room: any) => this.gameRoom.send(JSON.stringify({type: 'update', data: room, userId: this.userId}))
-    this.removePlayer = (room:any) => this.gameRoom.send(JSON.stringify({type: 'remove-player', data: {gameId: gameId, roomId: roomId}, userId: this.userId}))
-    return this.updateGameRoom
+
+    return (room: any) => {
+      console.log("update room ......")
+      this.gameRoom.send(JSON.stringify({type: 'update', data: room, userId: this.userId}))
+    }
   }
 
   closeGameRoom(){
     this.gameRoom.send(JSON.stringify({type: 'init', data: -1}))
   }
 
-  updateGameRoomListener(gameId: string, roomId: number, updateRoom: (room: any) => void){
-    // if(!this.gameRoom){
-    //   return this.startGameRoom(gameId, roomId, updateRoom)
-    // }
-    this.gameRoom.onmessage = (event) => updateRoom(JSON.parse(event.data))
-    this.gameRoom.send(JSON.stringify({type: 'get-update'}))
-    return this.updateGameRoom
+  createRoom(gameId: string, room: any, onCreate: (message: any, defaultHandler: undefined | ((message: any) => any)) => void){
+    this.sendMessage({
+      type: 'create-room',
+      gameId: gameId,
+      room: room,
+      playerInfo: {
+        id: this.userId,
+        name: this.userService.currentNickname,
+        ready: false
+      }
+    },
+    onCreate)
   }
+
+  leaveRoom(gameId: string, roomId: number){
+    this.sendMessage({
+      type: 'leave-room',
+      gameId: gameId,
+      roomId: roomId
+    })    
+  }
+
+  joinRoom(gameId: string, roomId: string){
+    this.sendMessage({
+      type: 'join-room',
+      gameId: gameId,
+      roomId: roomId,
+      playerInfo: {
+        id: this.userId,
+        name: this.userService.currentNickname,
+        ready: false
+      }
+    })    
+  }
+
 }

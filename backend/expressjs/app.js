@@ -91,8 +91,7 @@ app.post('/user/register', (req, res) => {
                 res.status(500).send("server error")
             }
         })
-
-        db.one('select * from user_profile where username=$1', [username])
+        .then(() => db.one('select * from user_profile where username=$1', [username]))
         .then(data => {
             res.send(data)
         })
@@ -124,69 +123,98 @@ var expressWs = require('express-ws')
 expressWs = expressWs(express());
 const appWs = expressWs.app
 const portWs = 3333
-var aWss = expressWs.getWss('/')
 appWs.use(cors({
     origin: 'http://localhost:4200'
 }))
 
 const roomsInfos = {}
 
-appWs.ws('/', function(ws, req, res) {
-    console.log('Socket Connected');
-
-    ws.onmessage = function(msg){
-        const message = JSON.parse(msg.data)
-        if(message && message.type === "rooms-update"){
-            roomsInfos[message.key] = message.value;
-            console.log(roomsInfos)
-            aWss.clients.forEach(client => {
-                sendMessage(client,{type: message.type, data: roomsInfos})
-            });
-        }
-        else if(message && message.type === "login"){
-            console.log("login from ", message.userId)
-            sendMessage(ws,{type:"rooms-update", data: roomsInfos})
-        }
-    }
-})
+const rooms = {}
 
 function sendMessage(ws, data){
     ws.send(JSON.stringify(data))
 }
 
-const rooms = {}
+
+function broadcastRoomsUpdateToAll() {
+    expressWs.getWss('/').clients.forEach(client => {
+        sendMessage(client, {type: 'rooms-update', data: rooms})
+    });
+}
+
+appWs.ws('/', function(ws, req, res) {
+    console.log('Socket Connected');
+
+
+    ws.onmessage = function(msg){
+        const message = JSON.parse(msg.data)
+        
+        if(message && message.type === "login"){
+            console.log("login from ", message.userId)
+            sendMessage(ws,{type:"rooms-update", data: rooms})
+        }
+        else{
+            if(message && message.type === 'create-room'){
+                if(!rooms[message.gameId])
+                    rooms[message.gameId] = {}
+
+                const gameRooms = rooms[message.gameId]
+                
+                const newRoom =           {
+                    name: message.room.name,
+                    hostId: message.userId,
+                    roomId: !gameRooms || Object.keys(gameRooms).length === 0 ? 1 : gameRooms[parseInt(Object.keys(gameRooms)[Object.keys(gameRooms).length-1])].roomId+1,
+                    dealerId: message.userId,
+                    players: [message.playerInfo]
+                  }
+
+                rooms[message.gameId][newRoom.roomId] = newRoom
+                sendMessage(ws, {type: 'create-room', data: rooms[message.gameId][newRoom.roomId]})
+            }
+            else if(message && message.type === 'leave-room'){
+                const room = rooms[message.gameId][message.roomId]
+                if(room.hostId === message.userId){
+                    delete rooms[message.gameId][message.roomId]
+                }
+                else{
+                    let player = room.players.find(player => player.id === message.userId)
+                    if(player){
+                        room.players.splice(room.players.indexOf(player), 1)
+                    }
+                }
+            }
+            else if(message && message.type === 'join-room'){
+                const room = rooms[message.gameId][message.roomId]
+                room.players.push(message.playerInfo)
+            }
+            broadcastRoomsUpdateToAll()
+        }
+    }
+})
+
 appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
     console.log("started")
     
     const gameId = req.params['gameId'];
-    const roomId = req.params['roomId'];
+    const roomId = parseInt(req.params['roomId']);
 
-    function broadcastMessage(ws, data){
-        if(rooms[gameId] && rooms[gameId][roomId] && rooms[gameId][roomId].clients){
-            rooms[gameId][roomId].clients.forEach(ws => {
-                sendMessage(ws.client, data)
-            })
-        }
+    function broadcastMessageToRoom(data){
+        expressWs.getWss(`game/${gameId}/room/${roomId}`).clients.forEach(ws => {
+            sendMessage(ws, data)
+        })
     }
-
-    const room = roomsInfos[gameId] ? {...roomsInfos}[gameId][parseInt(roomId)] : null
 
     ws.onmessage = function(msg){    
         console.log("received", msg)
         const message = JSON.parse(msg.data)
         if(message && message.type === 'init'){
             if(message.data === -1){
-                broadcastMessage(ws, {type: 'init', data: -1})
+                broadcastMessageToRoom({type: 'init', data: -1})
                 delete rooms[gameId][roomId]
+                broadcastRoomsUpdateToAll()
             }
             if(rooms[gameId] && rooms[gameId][roomId]){
-                if(!rooms[gameId][roomId].room.players.find(player => player.id === message.userId)){
-                    rooms[gameId][roomId].room.players.push(room.players.find(player => player.id === message.userId))
-                }
-                
-                rooms[gameId][roomId].clients.push({id: message.userId, client: ws})
-                sendMessage(ws, {type: 'init', data: 0})
-                broadcastMessage(ws, {type: 'update', data: rooms[gameId][roomId].room})
+                broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
             }
             else{
                 sendMessage(ws, {type: 'init', data: -1})
@@ -195,43 +223,22 @@ appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
         else if(message && message.type === 'remove-player'){
             console.log(rooms)
             const playerId = message.userId;
-            const {gameId, roomId} = message.data;
             const players = rooms[gameId][roomId].room.players
             rooms[gameId][roomId].room.players.splice(players.indexOf(players.find(player => player.id === playerId)), 1)
 
-            const clients = rooms[gameId][roomId].clients
-            rooms[gameId][roomId].clients.splice(clients.indexOf(clients.find(client => client.id === message.userId)), 1)
-            broadcastMessage(ws, {type: 'update', data: rooms[gameId][roomId].room})
+            broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
+            broadcastRoomsUpdateToAll()
             console.log(rooms)
         }
         else {
-            if(message && message.data){
-                console.log(`update from ${message.userId}, `, message.data)
-                rooms[gameId][roomId].room = message.data
+            if(message && message.type === 'update'){
+                console.log(`update from ${message.userId}, `)
+                rooms[gameId][roomId] = message.data
             }
-            broadcastMessage(ws, {type: 'update', data: rooms[gameId][roomId].room})
+            broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
         }
-    }
-
-    if(!room){
-        return
-    }
-    if(!rooms[gameId]){
-        rooms[gameId] = {[roomId]: {room: room}}
-    }
-
-    if(rooms[gameId] && !rooms[gameId][roomId]){
-        rooms[gameId][roomId] = {room: room}
-    }
-
-    if(!rooms[gameId][roomId].clients){
-        rooms[gameId][roomId].clients = []
     }
     
 })
-
-// appWs.get('/', (req, res) => {
-//     console.log("received", req)
-// })
 
 appWs.listen(portWs, () => {console.log("another one")})

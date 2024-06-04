@@ -2,14 +2,13 @@ import { Component, Input, AfterContentInit, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BroadcastService } from '../services/broadcast-service/broadcast.service';
 import { Router } from '@angular/router';
-import { Subject, Subscription } from 'rxjs';
 import { UserService } from '../services/id-service/user.service';
-import { read } from 'fs';
+import { MinesweeperComponent } from '../product-items/minesweeper/minesweeper.component';
 
 @Component({
   selector: 'app-game-room',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MinesweeperComponent],
   templateUrl: './game-room.component.html',
   styleUrl: './game-room.component.css'
 })
@@ -21,7 +20,6 @@ export class GameRoomComponent implements AfterContentInit{
   hostName!: string
   dealerName!: string
   room!: any
-  // broadcastServiceSubscription: Subscription
   ready!: boolean
   userId!: string
 
@@ -35,13 +33,17 @@ export class GameRoomComponent implements AfterContentInit{
   startGameRoom(){
     this.updateRoom = this.broadcastService.startGameRoom(this.gameId, parseInt(this.roomId),
      (message: any) => {
-      console.log("game-room message received", message)
+      console.log("game-room message received", message.data.players[0], this.userId)
       if(message.type === 'init' && message.data !== 0){
         alert('this room doesn\'t exist anymore')
         this.broadcastService.gameRoom.close()
         this.router.navigate(['/products'])
       }
       else if(message.type === 'update'){
+        if(!message.data.players.find((player:any) => player.id === this.userId)){
+          alert('join room before accessing it')
+          this.router.navigate(['/products'])
+        }
         console.log(message.data)
         const room = message.data
         this.room = room
@@ -50,8 +52,10 @@ export class GameRoomComponent implements AfterContentInit{
         this.dealerName = room.players.find((player: any) => player.id === room.dealerId).name  
       }
     })
+  }
 
-    console.log(this.updateRoom)
+  renderGame() {
+    return this.room && (this.room.ready && this.ready) || (this.ready && this.userId === this.room.dealerId)
   }
 
   ngAfterContentInit(): void {
@@ -63,22 +67,14 @@ export class GameRoomComponent implements AfterContentInit{
   }
 
   toggleReady(){
-    if(!this.ready && this.room.dealerId === this.userId){
-      this.router.navigate([`products/game/${this.gameId}/${this.roomId}/play`])
-    }
-    else if(!this.room.ready){
+
+    if(!this.room.ready && this.userId !== this.room.dealerId){
       alert('Room is not ready')
+      return;
     }
-    else if(!this.ready && this.room.ready === true){
-      // const gameRooms = Object.assign([], this.broadcastService.roomState[this.gameId])
-      // const room = gameRooms.filter((room: any) => room.roomId === this.roomId)
-      this.room.players.filter((player: any) => player.id === this.userId)[0].ready = !this.ready
-      this.updateRoom(this.room)
-      this.router.navigate([`products/game/${this.gameId}/${this.roomId}/play`])
-    }
-    else if(this.ready){
-      this.ready = !this.ready
-    }
+    
+    this.room.players.filter((player: any) => player.id === this.userId)[0].ready = !this.ready
+    this.updateRoom(this.room)
   }
 
   getReadyOrNotClass(ready: boolean){

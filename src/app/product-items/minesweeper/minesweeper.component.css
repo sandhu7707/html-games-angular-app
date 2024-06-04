@@ -50,5 +50,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 2vh;
     background-color: #faebd7ed;
 }

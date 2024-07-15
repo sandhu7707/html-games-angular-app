@@ -4,4 +4,5 @@ COPY expressjs .
 RUN npm install 
 ARG IPADDR
 EXPOSE 3000
-ENTRYPOINT "node" "app.js" http://$IPADDR:3000/
+EXPOSE 3333
+ENTRYPOINT "node" "app.js" http://$IPADDR:4200

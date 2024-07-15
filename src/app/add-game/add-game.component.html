@@ -1,0 +1,24 @@
+<h1>Upload compressed code (.zip file)</h1>
+<section>
+    <label>Upload Zip File</label>
+    <input type="file" id="file" name="game-code" accept=".zip" (input)="handleChange($event)" #fileInput/>
+    <button type="submit" (click)="upload()">Upload</button>
+</section>
+<section>
+    <h2>Code Conventions</h2>
+    <ul>
+        <li>Name of the folder must be the name of the game</li>
+        <li>Name the html entry file must be index.html</li>
+        <li>index.html should be the immediate child of the folder extracted from zip file</li>
+    </ul>
+</section>
+<section>
+    <h2>Maintaining game state for multiplayer games</h2>
+    <label>APIs for connecting to server, receiving game state and updating game state</label>
+    <a href="./server.js" download>server.js</a>
+</section>
+<section>
+    <h2>Example</h2>
+    <a href="./snake3.zip" download>snake.zip</a> 
+    <p>Controls - W,A,S,D keys</p>
+</section>

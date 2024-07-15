@@ -1,10 +1,6 @@
-run database
-* 
+This is a 'hello-world' project in MEAN stack - a web application to host HTML5 games.
 
-run node.js 
-* npm install
-* node app.js
+### Angular + ExpressJS + Postgres
 
-run angular frontend
-* npm install
-* ng serve
+### Run with Docker
+    - ./start.bat

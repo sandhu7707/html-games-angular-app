@@ -76,7 +76,7 @@ h4.room-name{
 
 button.join-button{
     /* float: right; */
-    margin-inline-start: 0.5rem;
+    margin-inline: 0.5rem;
     height: 1.25rem; 
  } 
 

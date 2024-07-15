@@ -21,7 +21,7 @@ import { BroadcastService } from './services/broadcast-service/broadcast.service
 export class AppComponent{
   title = 'hello-world';
   name = "";
-  navStatus: number[] = new Array(2).fill(0)
+  navStatus: number[] = new Array(3).fill(0)
 
   @ViewChild("appChatWidget") chatWidget!: ChatWidgetComponent;
 
@@ -38,12 +38,15 @@ export class AppComponent{
     location.onUrlChange((url, state) => {
       
       console.log(url)
-      this.navStatus = new Array(2).fill(0)
+      this.navStatus = new Array(3).fill(0)
       if(url.includes("home")){
         this.navStatus[0] = 1
       }
-      else if(url.includes("profile")){
+      else if(url.includes("add-game")){
         this.navStatus[1] = 1
+      }
+      else if(url.includes("profile")){
+        this.navStatus[2] = 1
       }
     })
 

@@ -3,7 +3,7 @@
         <router-outlet></router-outlet>
     </div>
     <ul class="products-list">
-        <li class="product-item">
+        <!-- <li class="product-item">
             <div class="product-name">
                 <h2>Minesweeper</h2>
             </div>
@@ -22,6 +22,28 @@
                 </div>
             <div class="create-room-button">
                 <button [hidden]="alreadyJoined(null, false, null)" (click)="createRoom(MINESWEEPER_ID)">Create Room</button>
+            </div>
+        </li> -->
+        <li class="product-item" *ngFor="let game of games">
+            <div class="product-name">
+                <h2>{{game.name}}</h2>
+            </div>
+                <div class="product-rooms">
+                    <h3>Active Rooms</h3>
+                    <ul>
+                        <li class="rooms-list-item" *ngFor="let room of rooms[game.name] | keyvalue">
+                            <div>
+                                <h4 class="room-name">{{room.value.name}} {{room.key}}</h4>
+                                <span class="room-players-number">{{room.value.players.length}}</span>
+                                <button [hidden]="alreadyJoined(null, false, null)" class="join-button" (click)="joinRoom(game.name, room.key)">Join</button>
+                                <button [hidden]="!alreadyJoined(room.key, false, null)" class="join-button" (click)="leaveRoom(game.name, room.key)">Leave Room</button>
+                                <button [hidden]="!alreadyJoined(room.key, false, null)" class="enter-button" routerLink="/products/game-area/{{game.name}}/{{room.value.roomId}}">Enter Room</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            <div class="create-room-button">
+                <button [hidden]="alreadyJoined(null, false, null)" (click)="createRoom(game.name)">Create Room</button>
             </div>
         </li>
     </ul>

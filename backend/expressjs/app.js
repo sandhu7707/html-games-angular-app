@@ -2,6 +2,8 @@ const express = require('express')
 const app = express()
 const pgp = require('pg-promise')()
 const cors = require('cors')
+const decompress = require('decompress')
+
 if(!process.argv[2]){
     throw new Error("no origin specified");
 }
@@ -10,17 +12,20 @@ else if(!process.argv[2].match(/https{0,1}:\/\/[\w,:,.]*$/)){
 }
 const allowedOrigins = [process.argv[2]]
 
-console.log("allowedOrigins: ", allowedOrigins)
+console.log("allowedOrigins: ", allowedOrigins, '\ndbaddress: ', process.env.DBADDR ? process.env.DBADDR : 'localhost')
 
 app.use(cors({
         origin: allowedOrigins
 }))
-app.use(express.json())
 
+// app.use((req, res, next) => {
+//     console.log(req.body)
+//     next();
+// })
 
 const port = 3000
 const cn = {
-    host: 'localhost',
+    host: process.env.DBADDR ? process.env.DBADDR : 'localhost',
     port: 5432,
     database: 'helloworld',
     user: 'helloworldapp',
@@ -55,7 +60,7 @@ app.get('/user/:username', (req, res) => {
     }
 })
 
-app.post('/user/authenticate', (req, res) => {
+app.post('/user/authenticate', express.json(), (req, res) => {
     console.log("something")
     const {username, password} = req.body
     if(username && password){
@@ -64,13 +69,15 @@ app.post('/user/authenticate', (req, res) => {
                 if(data.password === password){
                     res.send(data)
                 } else {
-                    throw new Error()
+                    //recheck 
+                    // throw new Error()
+                    res.status(401).send("Incorrect Credentials")
                 }
             }
         )
         .catch(err => {
             if(err.code === qrec.noData){
-                res.send("Incorrect Credentials")
+                res.send("Incorrect Credentials") 
             }
         })
     }
@@ -79,7 +86,7 @@ app.post('/user/authenticate', (req, res) => {
     }
 })
 
-app.post('/user/register', (req, res) => {
+app.post('/user/register', express.json(), (req, res) => {
     const {username, password} = req.body
     if(username && password){
         db.none('insert into user_profile values(default, $1, $2)', [username, password])
@@ -88,6 +95,7 @@ app.post('/user/register', (req, res) => {
                 res.status(409).send("username already exists")
             }
             else{
+                console.error(err)
                 res.status(500).send("server error")
             }
         })
@@ -104,6 +112,57 @@ app.post('/user/register', (req, res) => {
     else{
         res.status(400).send("bad request")
     }
+})
+
+app.use(express.static('product_items'))
+app.post("/games/upload/:name", express.raw({type: 'application/octet-stream'}), (req, res) => {
+    const name = req.params['name']
+    db.any('insert into games values(default, $1, $2)', [name, req.body])
+    .catch(err => console.log(err))
+})
+
+const fs = require('fs')
+app.get("/games", (req, res) => {
+    db.any("SELECT * from games")
+    .then(async (rows) => {
+        const games = []
+        new Promise(async (resolve, reject) => {
+            for(let i=0; i<rows.length; i++){
+                const row = rows[i]
+                
+                if(!fs.existsSync(`product_items/games/${row.game_name}`)){
+                    const files = await decompress(row.game_code, 'product_items/games')
+                    
+                    files.forEach(file => {
+                        if(file.path.match(/[\\w,\/,\\]index.html$/)){
+                            console.log(file.path)
+                            games.push({
+                                id: row.game_id,
+                                name: row.game_name,
+                            })
+                        }
+                    })
+                    
+                    if(!files){
+                        reject()
+                    }
+                }
+                else{
+                    games.push({
+                        id: row.game_id,
+                        name: row.game_name,
+                    })
+                }
+
+                if(i === rows.length-1){
+                    resolve(games)
+                }
+            }    
+        })
+        .then(data => res.send(data))
+        .catch(err => console.log(err))
+    })
+    .catch((err) => console.log(err))
 })
 
 app.put("/games/start", (req, res) => {
@@ -124,27 +183,27 @@ expressWs = expressWs(express());
 const appWs = expressWs.app
 const portWs = 3333
 appWs.use(cors({
-    origin: 'http://localhost:4200'
+    origin: allowedOrigins
 }))
 
 const roomsInfos = {}
 
 const rooms = {}
-
+const clients = []
 function sendMessage(ws, data){
     ws.send(JSON.stringify(data))
 }
 
 
 function broadcastRoomsUpdateToAll() {
-    expressWs.getWss('/').clients.forEach(client => {
+    clients.forEach(client => {
         sendMessage(client, {type: 'rooms-update', data: rooms})
     });
 }
 
 appWs.ws('/', function(ws, req, res) {
     console.log('Socket Connected');
-
+    clients.push(ws)
 
     ws.onmessage = function(msg){
         const message = JSON.parse(msg.data)
@@ -194,6 +253,7 @@ appWs.ws('/', function(ws, req, res) {
 
 appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
     console.log("started")
+    clients.push(ws)
     
     const gameId = req.params['gameId'];
     const roomId = parseInt(req.params['roomId']);
@@ -205,7 +265,6 @@ appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
     }
 
     ws.onmessage = function(msg){    
-        console.log("received", msg)
         const message = JSON.parse(msg.data)
         if(message && message.type === 'init'){
             if(message.data === -1){
@@ -239,6 +298,49 @@ appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
         }
     }
     
+})
+
+
+appWs.ws('/gameplay/:gameId/room/:roomId', function(ws, req) {
+    console.log("started")
+    
+    const gameId = req.params['gameId'];
+    const roomId = parseInt(req.params['roomId']);
+
+    function broadcastMessageToPlayers(data){
+        const playerStates = rooms[gameId][roomId].playersWs
+        for (let key in playerStates){
+            sendMessage(playerStates[key], data)
+        }
+    }
+
+    ws.onmessage = function(msg){    
+        const message = JSON.parse(msg.data)
+        if(message && message.type === 'init'){
+            if(rooms[gameId] && rooms[gameId][roomId]){
+                if(!rooms[gameId][roomId].gameState){
+                    rooms[gameId][roomId].gameState = {}
+                    rooms[gameId][roomId].playersWs = {}
+                    rooms[gameId][roomId].gameState.playerStates = {}
+                    rooms[gameId][roomId].gameState.gameState = {}
+                }
+                rooms[gameId][roomId].gameState.playerStates[message.userId] = {state: {}}
+                rooms[gameId][roomId].playersWs[message.userId] = ws
+
+                broadcastMessageToPlayers({type: 'game-state-update', data: rooms[gameId][roomId].gameState})
+            }
+        }
+        else if(message && message.type === 'update-player-state'){
+            const {data, userId} = message
+
+            rooms[gameId][roomId].gameState.playerStates[userId].state = data
+        }
+        else if(message && message.type === 'update-game-state'){
+            const {data} = message
+            rooms[gameId][roomId].gameState.gameState = data
+        }
+        broadcastMessageToPlayers({type: 'game-state-update', data: rooms[gameId][roomId].gameState})
+    }
 })
 
 appWs.listen(portWs, () => {console.log("another one")})

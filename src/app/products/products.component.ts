@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BroadcastService } from '../services/broadcast-service/broadcast.service';
 import { UserService } from '../services/id-service/user.service';
-
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
 
 export const MINESWEEPER_ID = 'MINESWEEPER';
 
@@ -20,13 +21,26 @@ export class ProductsComponent {
   userId!: string;
   rooms: {[key: string]: {[key: number]: any }}
 
-  constructor(private broadcastService: BroadcastService, private router: Router, private userService: UserService){
+  games: any
+
+  getGames() { 
+    this.httpClient.get(`${environment.serverHttpUrl}games`, {responseType: 'text'})
+     .subscribe({
+        next: (data: any) => {
+          this.games = JSON.parse(data)
+        },
+        error: (err) => console.log(err)
+     })
+  }
+
+  constructor(private broadcastService: BroadcastService, private router: Router, private userService: UserService, private httpClient: HttpClient){
     this.rooms = broadcastService.currentRoomState ? broadcastService.currentRoomState : []
     console.log("products.component constructor")
     broadcastService.roomStateObservable.subscribe((roomState) => {
       console.log(roomState)
       this.rooms = roomState
     })
+    this.getGames();
     if(userService.id)
       this.userId = userService.id
     else 
@@ -42,7 +56,7 @@ export class ProductsComponent {
       console.log(message)
       if(message && message.type === 'create-room'){
         const room = message.data
-        this.router.navigate([`/products/game/${gameId}/${room.roomId}`])
+        this.router.navigate([`/products/game-area/${gameId}/${room.roomId}`])
       }
       else if(defaultHandler){
         defaultHandler(event)
@@ -54,7 +68,7 @@ export class ProductsComponent {
     console.log("roomId, ", roomId, "rooms: ", this.rooms)
 
     this.broadcastService.joinRoom(gameId, roomId)
-    this.router.navigate([`/products/game/${gameId}/${roomId}`])
+    this.router.navigate([`/products/game-area/${gameId}/${roomId}`])
   }
 
   alreadyJoined(roomId: string | null, navigate: boolean | null, gameId: string | null){
@@ -66,7 +80,7 @@ export class ProductsComponent {
         }
         else{
           if(navigate && gameId) {
-            this.router.navigate([`/products/game/${gameId}/${playerRooms[0].roomId}`])
+            this.router.navigate([`/products/game-area/${gameId}/${playerRooms[0].roomId}`])
           }
           return true;
         }

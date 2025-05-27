@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-game',
@@ -17,7 +18,13 @@ export class AddGameComponent {
     console.log(e.target.files[0]);
   }
 
-  constructor(private httpClient: HttpClient){}
+  constructor(private httpClient: HttpClient, private router: Router){
+
+  }
+
+  // reload = () => {
+  //   window.location.reload();
+  // }
 
   upload = () => {
 
@@ -29,7 +36,13 @@ export class AddGameComponent {
 
     fileReader.onloadend = () => {
       this.httpClient.post(`${environment.serverHttpUrl}games/upload/${name}`, fileReader.result, {headers: {'Content-Type': 'application/octet-stream'}}).subscribe(
-        data => console.log(data)
+        data => {
+          console.log('upload successful')
+          window.location.reload()
+          // console.log('reload')
+          this.router.navigate(['/home'])
+          // console.log(data)
+        }
       )
     }
   }

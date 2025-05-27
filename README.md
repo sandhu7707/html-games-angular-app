@@ -6,4 +6,4 @@ This is a 'hello-world' project in MEAN stack - a web application to host HTML5 
     - ./start.bat
 
 * register user and then sign in
-* sample multiplayer - src/snake3.zip
+* sample multiplayer - ./snake3.zip

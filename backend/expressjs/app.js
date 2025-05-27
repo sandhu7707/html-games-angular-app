@@ -118,6 +118,7 @@ app.use(express.static('product_items'))
 app.post("/games/upload/:name", express.raw({type: 'application/octet-stream'}), (req, res) => {
     const name = req.params['name']
     db.any('insert into games values(default, $1, $2)', [name, req.body])
+    .then(res.status(200).send())
     .catch(err => console.log(err))
 })
 

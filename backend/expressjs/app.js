@@ -41,6 +41,10 @@ app.get('/', (req, res) => {
     res.send('Hello World!')
 })
 
+app.get('/username-check/:username', async (req, res) => {
+    let user = await db.any('select * from user_profile where username=$1', req.params.username);
+    res.status(200).send(JSON.stringify({available: user.length > 0 ? false : true}));
+})
 
 app.get('/user/:username', (req, res) => {
     const username = req.params['username'];

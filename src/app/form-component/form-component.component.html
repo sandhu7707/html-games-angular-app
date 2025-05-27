@@ -1,19 +1,52 @@
 <div class="container">
-        <h1>User Sign In/ Registration</h1>
+        <div class="form-header">
+            <h1 class="form-heading" *ngIf="action()==='signup'">User Registration!</h1>
+            <h1 class="form-heading" *ngIf="action()==='signin'">Sign In to get Started!</h1>
+        </div>
         <form [formGroup]="inputControl">
             <div>
-                <label for="username">Username</label>
-                <input type="text" name="username" class="form-control" formControlName="username"/>
+                <mat-form-field class="input-container" appearance="outline">
+                    <mat-label>Username</mat-label>  
+                    <div style="display: flex;">
+                        <input matInput name="username" type="text" formControlName="username"/>
+                        
+                        @if((username.touched || username.dirty) && username.status === 'PENDING'){ 
+                            <mat-progress-spinner mode="indeterminate" diameter="20" strokeWidth="5"></mat-progress-spinner >
+                        }
+                    </div>
+                </mat-form-field>
+                
+                    @if(username.touched || username.dirty){
+                    
+                    @if(username.hasError('fetchError')){
+                        <mat-error>Error fetching!</mat-error>
+                    }
+                    @if(username.status === 'INVALID'){
+                        @if(username.hasError('required')){
+                        <mat-error>Username is required!</mat-error>
+                        }
+                        @if(username.hasError('minlength')){
+                        <mat-error>Username should be atleast 4 characters long!</mat-error>
+                        }
+                        @if(username.hasError('usernameUnavailable')){
+                        <mat-error>Username not available!</mat-error>
+                        }
+                    }
+                    }
             </div>
-            <pre></pre>
             <div>
-                <label for="password">Password</label>
-                <input type="password" name="password" class="form-control" formControlName="password"/>
+                <mat-form-field class="input-container" appearance="outline">
+                    <mat-label for="password">Password</mat-label>
+                    <input matInput type="password" name="password" class="form-control" formControlName="password"/>
+                </mat-form-field>
             </div>
-            <pre></pre>
-            <div container="user-form-buttons">
-                <button type="submit" (click)="onSignIn($event)">Sign In</button>
-                <button type="submit" (click)="onRegister($event)">Register</button>
+            <div class="user-form-buttons">
+                <button  *ngIf="action()==='signin'" mat-stroked-button type="submit" (click)="onSignIn($event)">Sign In</button>
+                <button  *ngIf="action()==='signup'" mat-stroked-button type="submit" (click)="onRegister($event)">Register</button>
+            </div>
+            <div style="float: right;">
+                <h4 class="form-link" *ngIf="action()==='signin'" (click)="changeActionToSignUp()">... or create a new account?</h4>
+                <h4 class="form-link"  *ngIf="action()==='signup'"  (click)="changeActionToSignIn()">... or sign in to an existing account?</h4>
             </div>
         </form>
 </div>

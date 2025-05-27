@@ -1,7 +1,7 @@
 <div class="header-bar">
-  <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="userService.name" (input)="changeName($event)"/></h1>
+  <!-- <h1 class="app-heading">Hello <input class="app-heading-name-input" type="text" [value]="userService.name" (input)="changeName($event)"/></h1> -->
   <nav class="navigation-menu">
-    <ul *ngIf="userService.loggedIn">
+    <ul *ngIf="userService.loggedIn" >
       <li class="navigation-item">
         <a class="status-{{navStatus[0]}}" routerLink="/home">Home</a>
       </li>
@@ -29,10 +29,10 @@
     <!-- <app-ad-banner positionClass="container-right"></app-ad-banner> -->
   </div>
   
-<a (click)="some($event)">Test message</a>
+<!-- <a *ngIf="userService.loggedIn" (click)="some($event)">Test message</a> -->
 
 </div>
-<div class="chat-widget-container">
+<!-- <div *ngIf="userService.loggedIn" class="chat-widget-container">
   <button (click)="toggleChatWidgetVisibility()">Chat {{unreadMessageCount}}</button>
   <app-chat-widget #appChatWidget></app-chat-widget>
-</div>
+</div> -->

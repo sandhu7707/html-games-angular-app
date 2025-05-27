@@ -1,8 +1,11 @@
-<h1>Upload compressed code (.zip file)</h1>
-<section>
+<h1 class="add-game">Upload compressed code (.zip file)</h1>
+<section class="upload-file">
     <label>Upload Zip File</label>
-    <input type="file" id="file" name="game-code" accept=".zip" (input)="handleChange($event)" #fileInput/>
-    <button type="submit" (click)="upload()">Upload</button>
+        <!-- <button mat-icon-button aria-label="Choose File" readonly (click)="fileInput.click()">
+            <mat-icon style="height: auto;" svgIcon="attach"></mat-icon>
+        </button> -->
+    <input matInput #fileInput type="file" id="file" name="game-code" accept=".zip" (input)="handleChange($event)"/>
+    <button  mat-raised-button type="submit" (click)="upload()">Upload</button>
 </section>
 <section>
     <h2>Code Conventions</h2>
@@ -14,9 +17,12 @@
 </section>
 <section>
     <h2>Maintaining game state for multiplayer games</h2>
-    <label>APIs for connecting to server, receiving game state and updating game state</label>
+    <label>APIs for connecting to server, receiving game state and updating game state </label>
+    <br/>
     <a href="./server.js" download>server.js</a>
 </section>
+<br/>
+<br/>
 <section>
     <h2>Example</h2>
     <a href="./snake3.zip" download>snake.zip</a> 

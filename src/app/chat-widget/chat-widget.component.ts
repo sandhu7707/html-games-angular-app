@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MessageServiceService } from '../services/message-service/message-service.service';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-chat-widget',
   standalone: true,
-  imports: [],
+  imports: [MatButton],
   templateUrl: './chat-widget.component.html',
   styleUrl: './chat-widget.component.css'
 })

@@ -7,7 +7,7 @@
     list-style-type: none;
     align-content: center;
     padding: 0.2rem;
-    background-color: rgb(34, 43, 51, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     border-radius: 3vh;
     display: grid;
     grid-template-areas:
@@ -36,7 +36,7 @@
 }
 
 .product-item .product-name,.product-rooms,.create-room-button {
-    background-color: aliceblue;
+    background-color: rgb(146, 190, 104);
     width: 100%;
     height: 100%;
 }
@@ -80,21 +80,6 @@ button.join-button{
     height: 1.25rem; 
  } 
 
-/* .room-info{
-    display: flex;
-    margin-block-start: 0.5rem;
-}
-
-h5{
-    width: fit-content;
-    margin: 0;
-    margin-inline-end: 1rem;
-    margin-inline-start: 2rem;
-}
-
-.players-list{
-    list-style-type: none;
-}*/
 
  .rooms-list-item{
     list-style-type: none;

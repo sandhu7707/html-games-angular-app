@@ -3,8 +3,9 @@
     box-sizing: border-box;
     display: flex;
     width: 100%;
-    background-color: #ec1010c4;
-    border: 4px ridge #ec1010c4;
+    height: 3rem;
+    background-color: rgb(196, 154, 75);
+    border: 4px ridge orange;
     border-top-left-radius: 1rem;
     border-top-right-radius: 1rem;
 }
@@ -98,7 +99,7 @@ a.status-1 {
 .chat-widget-container button {
     width: 100%;
     height: 5rem;
-    background-color: aliceblue;
+    background-color: rgba(240, 248, 255, 0.363);
     border-top-left-radius: 5rem;
     border-bottom-left-radius: 0px;
     border-bottom-right-radius: 1em;
@@ -106,7 +107,7 @@ a.status-1 {
 
 .content-container {
     flex-grow: 1;
-    background-color: #2bd600b2;
+    background-color: #2d3b29b2;
     border: 4px ridge #2bd600b2;
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 1rem;

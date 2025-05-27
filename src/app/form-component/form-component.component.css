@@ -1,23 +1,39 @@
-.container {
-    width: fit-content;
-    margin: auto;
-    box-sizing: border-box;
-    padding: 20% 0;
+.container{
     height: 80vh;
+    width: 100%;
     display: flex;
     flex-direction: column;
+    align-items: center;
     justify-content: center;
 }
-form {
-    flex-grow: 1;
-    margin-top: 10%;
+
+form{
+    width: 60%;
 }
 
-form div{
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+form .input-container {
+    width: 100%;
 }
 
-form button {
-    margin: 10% 10%;
+form .user-form-buttons{
+    display: flex;
+    width: 100%;
+}
+
+form .user-form-buttons button{
+    width: 40%;
+    margin: auto;
+}
+
+h1.form-heading{
+    font-size: xx-large;
+}
+
+h4.form-link{
+    color: orange;
+}
+
+h4.form-link:hover{
+    cursor: pointer;
+    text-decoration: underline;
 }

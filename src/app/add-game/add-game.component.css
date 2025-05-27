@@ -1,0 +1,23 @@
+a {
+    color: orange
+}
+
+h1.add-game{
+    margin-top: 5vh;
+    font-size: xxx-large;
+}
+
+section *{
+    font-size: xx-large;
+}
+/* 
+section.upload-file{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
+} */
+
+section.upload-file input{
+    color: orange;
+}

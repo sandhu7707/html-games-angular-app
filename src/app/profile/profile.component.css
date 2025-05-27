@@ -11,3 +11,7 @@
 td {
     padding-bottom: 2rem;
 }
+
+.container *{
+    font-size: xx-large
+}

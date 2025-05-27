@@ -12,6 +12,6 @@ This is a 'hello-world' project in MEAN stack - a web application to host HTML5 
 * navigate to http://localhost:4200
 * register a user
 * navigate to add game
-* sample multiplayer - ./snake3.zip
-* create a room
+* follow the steps
+* create a room in newly added block
 * sign in as a different user from incognito or different browser and join the room

@@ -1,20 +1,21 @@
 import { Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormComponentComponent } from './form-component/form-component.component';
 import { ProductsComponent } from './products/products.component';
 import { ChatWidgetComponent } from './chat-widget/chat-widget.component';
 import { Subscription } from 'rxjs';
 import { MessageServiceService } from './services/message-service/message-service.service';
-import { UserService } from './services/id-service/user.service';
+import { UserService } from './services/user-service/user.service';
 import { AdBannerComponent } from './ad-banner/ad-banner.component';
 import { CommonModule, Location } from '@angular/common';
 import { BroadcastService } from './services/broadcast-service/broadcast.service';
+import { MatFormField, MatInputModule } from '@angular/material/input';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, FormComponentComponent, RouterLink, RouterLinkActive, ProductsComponent, ChatWidgetComponent, AdBannerComponent, CommonModule],
+  imports: [RouterOutlet, FormsModule, FormComponentComponent, RouterLink, RouterLinkActive, ProductsComponent, ChatWidgetComponent, AdBannerComponent, CommonModule, MatInputModule, MatFormField, ReactiveFormsModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -58,6 +59,8 @@ export class AppComponent{
       this.messageService.setUnreadMessageCount(0)
     }
   }
+
+  nickname = new FormControl(this.userService.name)
 
   changeName(e: any){
     this.userService.name = e.target.value

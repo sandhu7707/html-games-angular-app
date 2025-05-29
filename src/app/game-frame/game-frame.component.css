@@ -11,3 +11,7 @@
     flex-wrap: wrap;
     flex-direction: column;
 }
+
+iframe.game-area {
+    background-color: black;
+}

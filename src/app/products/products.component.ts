@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { BroadcastService } from '../services/broadcast-service/broadcast.service';
-import { UserService } from '../services/id-service/user.service';
+import { UserService } from '../services/user-service/user.service';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 
@@ -17,7 +17,6 @@ export const MINESWEEPER_ID = 'MINESWEEPER';
 })
 export class ProductsComponent {
 
-  MINESWEEPER_ID = MINESWEEPER_ID;
   userId!: string;
   rooms: {[key: string]: {[key: number]: any }}
 

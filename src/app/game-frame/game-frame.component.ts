@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common';
 import { AfterContentInit, Component, Inject, InjectionToken, Input } from '@angular/core';
-import { UserService } from '../services/id-service/user.service';
+import { UserService } from '../services/user-service/user.service';
 
 @Component({
   selector: 'app-game-frame',

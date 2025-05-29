@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, NgZone, ViewChild, Input } from '@angular/core';
-import { UserService } from '../services/id-service/user.service';
+import { UserService } from '../services/user-service/user.service';
 import { AdsService } from '../services/ads-service/ads.service';
 import { Router } from '@angular/router';
 

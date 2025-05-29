@@ -2,8 +2,8 @@ import { AfterViewInit, Component, inject, OnChanges, signal, WritableSignal } f
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, Validators, AsyncValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { UserService } from '../services/id-service/user.service';
-import { User } from '../services/id-service/user.type';
+import { UserService } from '../services/user-service/user.service';
+import { User } from '../services/user-service/user.type';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environment';
 import { MatButtonModule } from '@angular/material/button';

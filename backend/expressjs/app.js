@@ -18,11 +18,6 @@ app.use(cors({
         origin: allowedOrigins
 }))
 
-// app.use((req, res, next) => {
-//     console.log(req.body)
-//     next();
-// })
-
 const port = 3000
 const cn = {
     host: process.env.DBADDR ? process.env.DBADDR : 'localhost',
@@ -44,24 +39,6 @@ app.get('/', (req, res) => {
 app.get('/username-check/:username', async (req, res) => {
     let user = await db.any('select * from user_profile where username=$1', req.params.username);
     res.status(200).send(JSON.stringify({available: user.length > 0 ? false : true}));
-})
-
-app.get('/user/:username', (req, res) => {
-    const username = req.params['username'];
-    if(username){
-        db.one('select * from user_profile where username=$1', [username])
-        .then((data) => res.send(data))
-        .catch(err => {
-            console.log("err", err, err.code)
-            if(err.code === qrec.noData){
-                return res.send(no_record_found)
-            }
-        })
-        
-    }
-    else {
-        res.status(400).send("Bad Request")
-    }
 })
 
 app.post('/user/authenticate', express.json(), (req, res) => {
@@ -128,6 +105,7 @@ app.post("/games/upload/:name", express.raw({type: 'application/octet-stream'}),
 
 const fs = require('fs')
 app.get("/games", (req, res) => {
+    console.log("get /games")
     db.any("SELECT * from games")
     .then(async (rows) => {
         const games = []
@@ -169,14 +147,6 @@ app.get("/games", (req, res) => {
     })
     .catch((err) => console.log(err))
 })
-
-app.put("/games/start", (req, res) => {
-    const {game, hostId} = req.body;
-    console.log(aWss.clients)
-    // activeGames.push({game: game, host: host})
-})
-
-app.put("/games/")
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
@@ -228,7 +198,6 @@ appWs.ws('/', function(ws, req, res) {
                     name: message.room.name,
                     hostId: message.userId,
                     roomId: !gameRooms || Object.keys(gameRooms).length === 0 ? 1 : gameRooms[parseInt(Object.keys(gameRooms)[Object.keys(gameRooms).length-1])].roomId+1,
-                    dealerId: message.userId,
                     players: [message.playerInfo]
                   }
 
@@ -251,59 +220,27 @@ appWs.ws('/', function(ws, req, res) {
                 const room = rooms[message.gameId][message.roomId]
                 room.players.push(message.playerInfo)
             }
+            else if(message && message.type === 'logout'){
+                const userId = message.userId;
+                for(let i0 in rooms){
+                    for(let i1 in rooms[i0]){
+                        if(rooms[i0][i1].hostId === userId){
+                            delete rooms[i0][i1]
+                        }
+                        else{
+                            let player = rooms[i0][i1].players.find(player => player.id === userId);
+                            if(player){
+                                rooms[i0][i1].players.splice(rooms[i0][i1].players.indexOf(player), 1)
+                            }
+                        }
+                    }
+                }
+            }
             broadcastRoomsUpdateToAll()
         }
     }
 })
 
-appWs.ws('/game/:gameId/room/:roomId', function(ws, req) {
-    console.log("started")
-    clients.push(ws)
-    
-    const gameId = req.params['gameId'];
-    const roomId = parseInt(req.params['roomId']);
-
-    function broadcastMessageToRoom(data){
-        expressWs.getWss(`game/${gameId}/room/${roomId}`).clients.forEach(ws => {
-            sendMessage(ws, data)
-        })
-    }
-
-    ws.onmessage = function(msg){    
-        const message = JSON.parse(msg.data)
-        if(message && message.type === 'init'){
-            if(message.data === -1){
-                broadcastMessageToRoom({type: 'init', data: -1})
-                delete rooms[gameId][roomId]
-                broadcastRoomsUpdateToAll()
-            }
-            if(rooms[gameId] && rooms[gameId][roomId]){
-                broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
-            }
-            else{
-                sendMessage(ws, {type: 'init', data: -1})
-            }
-        }
-        else if(message && message.type === 'remove-player'){
-            console.log(rooms)
-            const playerId = message.userId;
-            const players = rooms[gameId][roomId].room.players
-            rooms[gameId][roomId].room.players.splice(players.indexOf(players.find(player => player.id === playerId)), 1)
-
-            broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
-            broadcastRoomsUpdateToAll()
-            console.log(rooms)
-        }
-        else {
-            if(message && message.type === 'update'){
-                console.log(`update from ${message.userId}, `)
-                rooms[gameId][roomId] = message.data
-            }
-            broadcastMessageToRoom({type: 'update', data: rooms[gameId][roomId]})
-        }
-    }
-    
-})
 
 
 appWs.ws('/gameplay/:gameId/room/:roomId', function(ws, req) {
@@ -321,7 +258,11 @@ appWs.ws('/gameplay/:gameId/room/:roomId', function(ws, req) {
 
     ws.onmessage = function(msg){    
         const message = JSON.parse(msg.data)
+        
+
         if(message && message.type === 'init'){
+            const userId = message.userId;
+
             if(rooms[gameId] && rooms[gameId][roomId]){
                 if(!rooms[gameId][roomId].gameState){
                     rooms[gameId][roomId].gameState = {}
@@ -329,23 +270,28 @@ appWs.ws('/gameplay/:gameId/room/:roomId', function(ws, req) {
                     rooms[gameId][roomId].gameState.playerStates = {}
                     rooms[gameId][roomId].gameState.gameState = {}
                 }
-                rooms[gameId][roomId].gameState.playerStates[message.userId] = {state: {}}
-                rooms[gameId][roomId].playersWs[message.userId] = ws
+                rooms[gameId][roomId].gameState.playerStates[userId] = {state: {}}
+                rooms[gameId][roomId].playersWs[userId] = ws
 
                 broadcastMessageToPlayers({type: 'game-state-update', data: rooms[gameId][roomId].gameState})
             }
         }
-        else if(message && message.type === 'update-player-state'){
-            const {data, userId} = message
+        else if(rooms[gameId][roomId]){
+            if(message && message.type === 'update-player-state'){
+                const {data, userId} = message
 
-            rooms[gameId][roomId].gameState.playerStates[userId].state = data
+                rooms[gameId][roomId].gameState.playerStates[userId].state = data
+            }
+            else if(message && message.type === 'update-game-state'){
+                const {data} = message
+                rooms[gameId][roomId].gameState.gameState = data
+            }
+            broadcastMessageToPlayers({type: 'game-state-update', data: rooms[gameId][roomId].gameState})
         }
-        else if(message && message.type === 'update-game-state'){
-            const {data} = message
-            rooms[gameId][roomId].gameState.gameState = data
+        else{
+            broadcastMessageToPlayers({type: 'game-state-update', data: {}})
         }
-        broadcastMessageToPlayers({type: 'game-state-update', data: rooms[gameId][roomId].gameState})
     }
 })
 
-appWs.listen(portWs, () => {console.log("another one")})
+appWs.listen(portWs, () => {console.log(`listening for websocket connections at ${portWs}`)})

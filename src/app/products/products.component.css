@@ -3,7 +3,7 @@
 }
 
 .product-item {
-    border: 4px ridge gold;
+    border: 4px ridge rgb(196, 154, 75);
     list-style-type: none;
     align-content: center;
     padding: 0.2rem;
@@ -11,7 +11,7 @@
     border-radius: 3vh;
     display: grid;
     grid-template-areas:
-        "product-name product-rooms"
+        "product-name product-rooms-heading"
         "create-room-button product-rooms";
     grid-template-columns: 1fr 3fr;
     grid-template-rows: 4fr 1fr;
@@ -20,23 +20,30 @@
 }
 
 .product-name{
-    border-top-left-radius: 3vh;
+    border-top-left-radius: 2vh;
     grid-area: product-name;
 }
 
+.product-rooms-heading{
+    box-sizing: border-box;
+    padding: 2vw;
+    border-top-right-radius: 2vh;
+    grid-area: product-rooms-heading;
+}
+
 .product-rooms{
-    border-top-right-radius: 3vh;
-    border-bottom-right-radius: 3vh;
     grid-area: product-rooms;
+    border-bottom-right-radius: 2vh;
 }
 
 .create-room-button{
-    border-bottom-left-radius: 3vh;
+    height: 2rem;
+    border-bottom-left-radius: 2vh;
     grid-area: create-room-button;
 }
 
-.product-item .product-name,.product-rooms,.create-room-button {
-    background-color: rgb(146, 190, 104);
+.product-item .product-name,.product-rooms,.create-room-button, .product-rooms-heading {
+    background-color: rgba(146, 190, 104, 0.5);
     width: 100%;
     height: 100%;
 }

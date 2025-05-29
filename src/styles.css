@@ -36,3 +36,86 @@ html, body { height: 100%; }
     font-weight: 400;
     font-style: normal;
 }
+
+@keyframes slide-up{
+    to{
+        transform: translateY(-100vh);
+    }
+}
+@keyframes slide-up-new{
+    from{
+        transform: translateY(100vh);
+    }
+}
+@keyframes slide-down{
+    to{
+        transform: translateY(100vh);
+    }
+}
+@keyframes slide-down-new{
+    from{
+        transform: translateY(-100vh);
+    }
+}
+
+
+@keyframes slide-left {
+    to{
+        transform: translateX(-100vw);
+    }
+}
+@keyframes slide-left-new {
+    from{
+        transform: translateX(100vw);
+    }
+}
+
+@keyframes slide-right {
+    to{
+        transform: translateX(100vw);
+    }
+}
+@keyframes slide-right-new {
+    from{
+        transform: translateX(-100vw);
+    }
+}
+
+::view-transition-old(*){
+    animation-name: slide-left;
+    animation-duration: 200ms;
+}
+::view-transition-new(*){
+    animation-name: slide-left-new;
+    animation-duration: 200ms;
+}
+html:active-view-transition-type(backwards){
+    &::view-transition-old(*){
+        animation-name: slide-right;
+        animation-duration: 200ms;
+    }
+    &::view-transition-new(*){
+        animation-name: slide-right-new;
+        animation-duration: 200ms;
+    }
+}
+html:active-view-transition-type(login){
+    &::view-transition-old(*){
+        animation-name: slide-up;
+        animation-duration: 200ms;
+    }
+    &::view-transition-new(*){
+        animation-name: slide-up-new;
+        animation-duration: 200ms;
+    }
+}
+html:active-view-transition-type(logout){
+    &::view-transition-old(*){
+        animation-name: slide-down;
+        animation-duration: 500ms;
+    }
+    &::view-transition-new(*){
+        animation-name: slide-down-new;
+        animation-duration: 500ms;
+    }
+}

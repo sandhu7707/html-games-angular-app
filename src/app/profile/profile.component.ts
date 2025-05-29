@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { UserService } from '../services/id-service/user.service';
+import { UserService } from '../services/user-service/user.service';
 import { Router } from '@angular/router';
 import { MatButton } from '@angular/material/button';
+import { BroadcastService } from '../services/broadcast-service/broadcast.service';
 
 @Component({
   selector: 'app-profile',
@@ -12,12 +13,13 @@ import { MatButton } from '@angular/material/button';
 })
 export class ProfileComponent {
 
-  constructor(protected userService: UserService, private router: Router){
+  constructor(protected userService: UserService, private router: Router, private broadcastService: BroadcastService){
 
   }
 
   logOut(){
     this.userService.logout()
     this.router.navigate(['/login'])
+    this.broadcastService.logout()
   }
 }
